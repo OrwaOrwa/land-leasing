@@ -52,7 +52,7 @@ export default function DrawerComponentNonAuth() {
           </Link>
         </ListItem>
         <ListItem button>
-          <Link to={ROUTES.HOME} className={classes.link}>
+          <Link to={ROUTES.PRODUCTS} className={classes.link}>
             Products
           </Link>
         </ListItem>

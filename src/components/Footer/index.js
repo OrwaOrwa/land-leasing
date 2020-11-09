@@ -43,7 +43,7 @@ function Footer() {
           </p>
           <p>
             <Link
-              to={ROUTES.HOME}
+              to={ROUTES.PRODUCTS}
               style={{ textDecoration: "none", color: "black" }}
             >
               Products

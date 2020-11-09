@@ -4,15 +4,11 @@ import "./index.css";
 import App from "./components/App";
 import * as serviceWorker from "./serviceWorker";
 
-import Firebase, { FirebaseContext } from "./components/Firebase";
-
 ReactDOM.render(
-  // providing an instance of firebase in the whole app
-  // It ensures that firebase is only instantiated only once
-  <FirebaseContext.Provider value={new Firebase()}>
-    <App />
-  </FirebaseContext.Provider>,
-  document.getElementById("root")
+    // providing an instance of firebase in the whole app
+    // It ensures that firebase is only instantiated only once
+    <App/>,
+    document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

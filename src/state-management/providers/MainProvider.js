@@ -72,7 +72,7 @@ class MainProvider extends Component {
       })
       .then((authUser) => {
         this.setState({ ...INITIAL_USER_REG });
-        this.props.history.push(ROUTES.HOME);
+        this.props.history.push(ROUTES.PRODUCTS);
       })
       .catch((error) => {
         this.setState({ signUpError: error });
@@ -103,7 +103,7 @@ class MainProvider extends Component {
       )
       .then((authUser) => {
         this.setState({ ...INITIAL_USER_LOG_IN });
-        this.props.history.push(ROUTES.HOME);
+        this.props.history.push(ROUTES.PRODUCTS);
       })
       .catch((error) => {
         this.setState({ signInError: error });

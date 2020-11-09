@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { withFirebase } from "../Firebase";
-import firebase from "firebase";
 import renderIf from "render-if";
 
 const MainDiv = styled.div`
@@ -105,19 +104,19 @@ class Payments extends Component {
   handlePaymentUpload = (event) => {
     event.preventDefault();
 
-    var today = new Date();
-    var date =
+    let today = new Date();
+    let date =
       today.getFullYear() +
       "-" +
       (today.getMonth() + 1) +
       "-" +
       today.getDate();
-    var time =
+    let time =
       today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var dateUploaded = date + " " + time;
+    let dateUploaded = date + " " + time;
     const { lessorName, amount, mpesaCode } = this.state;
 
-    firebase
+    /*firebase
       .database()
       .ref(`payments/${Math.floor(Math.random() * (10000000 - 1 + 1)) + 1}/`)
       .set({
@@ -126,7 +125,7 @@ class Payments extends Component {
         amount: amount,
         mpesaCode: mpesaCode,
         datePaid: dateUploaded,
-      });
+      });*/
     this.setState({ finished: true });
   };
   render() {
@@ -141,7 +140,7 @@ class Payments extends Component {
               value={this.state.lessorName}
               name="lessorName"
               onChange={this.handleChange}
-            ></Inputs>
+            />
           </Detail>
           <Detail>
             <Option>Amount : </Option>
@@ -150,7 +149,7 @@ class Payments extends Component {
               value={this.state.amount}
               name="amount"
               onChange={this.handleChange}
-            ></Inputs>
+            />
           </Detail>
         </PaymentDetailsDiv>
         {/* <MakePaymentButton>Make Payment</MakePaymentButton> */}
@@ -162,7 +161,7 @@ class Payments extends Component {
             value={this.state.mpesaCode}
             name="mpesaCode"
             onChange={this.handleChange}
-          ></Input>
+          />
           <MakePaymentButton type="submit" onClick={this.handlePaymentUpload}>
             Make Payment
           </MakePaymentButton>

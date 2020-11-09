@@ -1,3 +1,4 @@
+/*
 import app from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
@@ -74,3 +75,4 @@ class Firebase {
   addProductImage = () => this.store.ref("items/products/images");
 }
 export default Firebase;
+*/

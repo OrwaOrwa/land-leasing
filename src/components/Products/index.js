@@ -1,8 +1,7 @@
-import React, { Component } from "react";
-import { withFirebase } from "../Firebase";
+import React, {Component} from "react";
 import "./index.css";
-// import { withAuthorization } from "../Session";
 import styled from "styled-components";
+import {getProducts} from "../../providers/Products";
 
 const MainDiv = styled.div`
   padding: 0.5em;
@@ -146,72 +145,60 @@ const MerchantContact = styled.a`
   text-decoration: none;
 `;
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      allProducts: [],
+class Products extends Component {
+    state = {
+        loadingProducts: false,
+        products: [],
     };
-  }
 
-  componentDidMount() {
-    this.setState({ loading: true });
-    // fetching all available products
-    this.props.firebase.products().on("value", (snapshot) => {
-      const productsObject = snapshot.val();
-      const productsList = Object.keys(productsObject).map((key) => ({
-        ...productsObject[key],
-        id: key,
-      }));
-      this.setState({
-        allProducts: productsList,
-        loading: false,
-      });
-    });
-  }
+    componentDidMount() {
+        getProducts(this);
+    }
 
-  componentWillUnmount() {
-    this.props.firebase.products().off();
-  }
-
-  render() {
-    return (
-      <MainDiv>
-        <TopDiv>
-          <InnerDiv>
-            <Title>All Products/Services</Title>
-          </InnerDiv>
-          <InnerDiv>
-            {/* <SearchInput type="text" placeholder="Search"></SearchInput> */}
-          </InnerDiv>
-        </TopDiv>
-        <ItemsDiv>
-          {this.state.allProducts.map((product) => (
-            <Item key={product.id}>
-              <ItemImageDiv>
-                <Image src={product.image} alt={product.name}></Image>
-              </ItemImageDiv>
-              <ItemDetails>
-                <ItemName>{product.name}</ItemName>
-                <ItemProvider>{product.merchantName}</ItemProvider>
-                <ItemDescription>{product.description}</ItemDescription>
-              </ItemDetails>
-              <ItemExtraDetails>
-                <ItemPrice>Ksh. {product.price}</ItemPrice>
-                <ContactButton>
-                  <MerchantContact>{product.contact}</MerchantContact>
-                </ContactButton>
-              </ItemExtraDetails>
-            </Item>
-          ))}
-        </ItemsDiv>
-      </MainDiv>
-    );
-  }
+    render() {
+        const {products, loadingProducts} = this.state;
+        return (
+            <MainDiv>
+                <TopDiv>
+                    <InnerDiv>
+                        <Title>All Products/Services</Title>
+                    </InnerDiv>
+                    <InnerDiv>
+                        {/* <SearchInput type="text" placeholder="Search"></SearchInput> */}
+                    </InnerDiv>
+                </TopDiv>
+                <ItemsDiv>
+                    {loadingProducts ?
+                        <div>
+                            Loading products...
+                        </div> : products.length < 1 ?
+                            <div>No Products Yet</div> :
+                            products.map((product) => (
+                                <Item key={product.id} className="p-3">
+                                    <ItemImageDiv>
+                                        <Image src={product.image} alt={product.name}/>
+                                    </ItemImageDiv>
+                                    <ItemDetails>
+                                        <ItemName>{product.name}</ItemName>
+                                        <ItemProvider>{product.merchant.name}</ItemProvider>
+                                        <ItemDescription>{product.description}</ItemDescription>
+                                    </ItemDetails>
+                                    <ItemExtraDetails>
+                                        <ItemPrice>Ksh. {product.price}</ItemPrice>
+                                        <ContactButton>
+                                            <MerchantContact>Contact Merchant</MerchantContact>
+                                        </ContactButton>
+                                    </ItemExtraDetails>
+                                </Item>
+                            ))
+                    }
+                </ItemsDiv>
+            </MainDiv>
+        );
+    }
 }
 
 // const condition = (authUser) => !!authUser;
 
-// export default withAuthorization(condition)(Home);
-export default withFirebase(Home);
+// export default withAuthorization(condition)(Products);
+export default Products;
