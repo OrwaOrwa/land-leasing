@@ -1,10 +1,16 @@
-import React, { Component } from "react";
-import { withFirebase } from "../Firebase";
+import React, {Component} from "react";
+import {withFirebase} from "../Firebase";
 import "./LandDetails.css";
 // import Map from "../Map";
 import styled from "styled-components";
 import ReactModal from "react-modal";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
+import {makeRequest} from "../../helpers/network_utils";
+import {GET_REQUEST} from "../../values/globals";
+import endpoints from "../../constants/endpoints";
+import {parseErrorResponse, showAlert} from "../../helpers/helper_functions";
+import noImage from '../../assets/img/404.png';
+import MapContainer from "../Map";
 
 const MainDiv = styled.div`
   padding: 1.5em;
@@ -42,7 +48,7 @@ const ImageDiv = styled.div`
   width: 50vw;
 `;
 
-const Image = styled.img`
+/*const Image = styled.img`
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -54,7 +60,7 @@ const LandName = styled.h4`
   font-weight: 400;
   font-size: 1.1em;
   color: black;
-`;
+`;*/
 
 const LandDetail = styled.div`
   display: flex;
@@ -84,6 +90,7 @@ const Value = styled.h3`
   font-weight: 600;
   font-size: 1.2em;
 `;
+/*
 
 const CertificateDiv = styled.div`
   width: 100%;
@@ -107,6 +114,7 @@ const CertImage = styled.div`
   border: none;
   border-radius: 8px;
 `;
+*/
 
 const ButtonDiv = styled.div`
   width: 50%;
@@ -120,6 +128,7 @@ const ButtonDiv = styled.div`
 const Button = styled.button`
   height: 3em;
   width: 12em;
+  margin-right: 1rem;
   background-color: #3d9a04;
   color: white;
   border: none;
@@ -128,170 +137,209 @@ const Button = styled.button`
 `;
 
 class LandDetails extends Component {
-  state = {
-    landDetails: {},
-    id: "",
-    showModal: false,
-  };
+    state = {
+        land: null,
+        loading: false,
+        showModal: false,
+    };
 
-  componentDidMount(id) {
-    window.scrollTo(0, 0);
-    this.props.firebase
-      .findLand(this.props.match.params.id)
-      .on("value", (snapshot) => {
-        var land = snapshot.val();
-        if (land) {
-          this.setState({
-            landDetails: land,
-            id: this.props.match.params.id,
-          });
-        } else {
-          console.log("No such land");
-        }
-      });
-  }
+    componentDidMount() {
+        this.getLand()
+    }
 
-  handleOpenModal = () => {
-    this.setState({ showModal: true });
-  };
+    getLand = () => {
+        const {id} = this.props.match.params;
+        this.setState({
+            loading: true
+        })
+        makeRequest(GET_REQUEST, `${endpoints.lands}${id}`, {}, response => {
+            this.setState({
+                land: response.data
+            })
+        }, error => {
+            showAlert('error', 'Error', parseErrorResponse(error))
+        }, () => {
+            this.setState({
+                loading: false
+            })
+        })
+    }
 
-  handleCloseModal = () => {
-    this.setState({ showModal: false });
-  };
+    handleOpenModal = () => {
+        this.setState({showModal: true});
+    };
 
-  render() {
-    return (
-      <MainDiv>
-        <Title>Land Description</Title>
-        <TopDiv>
-          <ImageContainer>
-            <ImageDiv>
-              <Image
-                src={this.state.landDetails.image}
-                alt={this.state.landDetails.name}
-              ></Image>
-            </ImageDiv>
-            <LandName>
-              {this.state.landDetails.name} {this.state.landDetails.size}
-            </LandName>
-          </ImageContainer>
-          <LandDetail>
-            <Detail>
-              <Option>Location : </Option>
-              <Value>{this.state.landDetails.location}</Value>
-            </Detail>
-            <Detail>
-              <Option>Size : </Option>
-              <Value>{this.state.landDetails.size}</Value>
-            </Detail>
-            <Detail>
-              <Option>Price : </Option>
-              <Value>{this.state.landDetails.price}</Value>
-            </Detail>
-            <Detail>
-              <Option>Brief Description : </Option>
-              <Value>{this.state.landDetails.description}</Value>
-            </Detail>
-          </LandDetail>
-        </TopDiv>
-        <CertificateDiv>
-          <Title>Images of Certificates</Title>
-          <CertificateImages>
-            <CertImage>
-              <Image
-                src={this.state.landDetails.deedImage}
-                alt={this.state.landDetails.name}
-              ></Image>
-            </CertImage>
-          </CertificateImages>
-        </CertificateDiv>
+    handleCloseModal = () => {
+        this.setState({showModal: false});
+    };
 
-        <ButtonDiv>
-          <Button onClick={this.handleOpenModal}>Lease Agreement</Button>
-          <Button>Chat with Seller</Button>
-          <Link to="/payments">
-            <Button>Proceed To Payment</Button>
-          </Link>
-          <ReactModal
-            isOpen={this.state.showModal}
-            contentLabel="Minimal Modal Example"
-          >
-            <p>
-              This agreement is between ${this.state.landDetails.lessorName} (
-              landowner) and _________________, (tenant), for the lease of
-              certain parcels of land for the purpose of Agricultural practice
-              (Farming )
-            </p>
-            <p>
-              1.The parcel(s) contained in this agreement are is/described as
-              follows: location, Size.
-            </p>
-            <p>
-              2. The term of this lease shall be Expire from $
-              {this.state.landDetails.expiryDate}
-              except as terminated earlier according to the provisions below.{" "}
-            </p>
+    render() {
+        const {loading, land} = this.state;
+        return (
+            loading ?
+                <div className="text-center">
+                    Loading....
+                </div> :
+                land ?
+                    <MainDiv>
+                        <Title>Land Description</Title>
+                        <TopDiv>
+                            <ImageContainer>
+                                <ImageDiv>
+                                    <div style={{height: "30vh"}} id="carousel"
+                                         className="carousel slide bg-gray text-center"
+                                         data-ride="carousel">
+                                        <div className="carousel-inner">
+                                            {
+                                                land.image.length < 1 ?
+                                                    <img style={{objectFit: "contain", height: "30vh"}}
+                                                         className="imi d-inline-block mb-3 mb-lg-0 img-fluid"
+                                                         src={noImage} alt="car"/> :
+                                                    land.image.map((image, index) =>
+                                                        <div key={image.id}
+                                                             className={`carousel-item ${index === 0 && "active"}`}>
+                                                            <img style={{
+                                                                objectFit: "cover",
+                                                                height: "30vh",
+                                                                width: "100%"
+                                                            }}
+                                                                 className="imi d-inline-block mb-3 mb-lg-0 img-fluid"
+                                                                 src={image.image} srcSet={image.image} alt="car"/>
+                                                        </div>)
+                                            }
+                                        </div>
+                                        <a className="carousel-control-prev" href="#carousel" role="button"
+                                           data-slide="prev">
+                                            <span className="carousel-control-prev-icon" aria-hidden="true"/>
+                                            <span className="sr-only">Previous</span>
+                                        </a>
+                                        <a className="carousel-control-next" href="#carousel" role="button"
+                                           data-slide="next">
+                                            <span className="carousel-control-next-icon" aria-hidden="true"/>
+                                            <span className="sr-only">Next</span>
+                                        </a>
+                                    </div>
+                                </ImageDiv>
+                            </ImageContainer>
+                            <LandDetail>
+                                <Detail>
+                                    <Option>Size : </Option>
+                                    <Value>{land.size}</Value>
+                                </Detail>
+                                <Detail>
+                                    <Option>Price : </Option>
+                                    <Value>{land.price}</Value>
+                                </Detail>
+                                <Detail>
+                                    <Option>Brief Description : </Option>
+                                    <Value>{land.description}</Value>
+                                </Detail>
+                            </LandDetail>
 
-            <p>
-              3. The tenant agrees to pay a lease fee to the landowner of Ksh. $
-              {this.state.landDetails.price} per ${this.state.landDetails.size}.
-              The tenant agrees to pay such sum at the beginning of the lease
-              term and on the anniversary thereof unless otherwise mutually
-              agreed. This lease fee may be renegotiated annually.
-            </p>
+                        </TopDiv>
+                        <div style={{marginBottom: "60vh"}} className="w-100">
+                            <div className="col-12 position-relative">
+                                <h5>Location:</h5>
+                                <MapContainer initialCenter={{lat: land.lat, lng: land.lon}}/>
+                            </div>
+                        </div>
+                        <ButtonDiv>
+                            <Button onClick={this.handleOpenModal}>Lease Agreement</Button>
+                            <Button>Chat with Seller</Button>
+                            <Link to="/payments">
+                                <Button>Proceed To Payment</Button>
+                            </Link>
+                            <ReactModal
+                                isOpen={this.state.showModal}
+                                contentLabel="Lease Agreement"
+                            >
+                                <p>
+                                    This agreement is between {land.farmer.name} (
+                                    landowner) and _________________, (tenant), for the lease of
+                                    certain parcels of land for the purpose of Agricultural practice
+                                    (Farming )
+                                </p>
+                                <p>
+                                    1.The parcel(s) contained in this agreement are is/described as
+                                    follows: location, Size.
+                                </p>
+                                <p>
+                                    2. The term of this lease shall be Expire from
+                                    {land.lease_period} {" "}
+                                    except as terminated earlier according to the provisions below.{" "}
+                                </p>
 
-            <p>
-              4. Permitted Uses: The tenant is permitted all normal activities
-              associated with the above purposes, including but not limited to:
-              The tenant agrees to employ standard best management practices. It
-              shall not be considered a default of this Lease if weather or
-              other circumstance prevents timely practices or harvesting.{" "}
-            </p>
+                                <p>
+                                    3. The tenant agrees to pay a lease fee to the landowner of Ksh.
+                                    {land.price} per {land.size}.
+                                    The tenant agrees to pay such sum at the beginning of the lease
+                                    term and on the anniversary thereof unless otherwise mutually
+                                    agreed. This lease fee may be renegotiated annually.
+                                </p>
 
-            <p>
-              5. Prohibited Uses: The tenant shall not, unless by mutual
-              agreement to the contrary, engage in any of the following
-              activities on said parcel(s):{" "}
-            </p>
-            <p>
-              6. The tenant agrees to prepare an annual management plan for
-              review by the landlord, complete annual soil testing, and apply
-              amendments as indicated at his/her own expense. The tenant agrees
-              to proper disposal of trash and waste. The tenant further agrees:{" "}
-            </p>
-            <p>
-              7. The [landowner/tenant] agrees to pay all taxes and assessments
-              associated with this parcel.{" "}
-            </p>
-            <p>
-              8. The farmer agrees to provide the landowner with evidence of
-              liability insurance coverage.{" "}
-            </p>
-            <p>
-              9. Either party may terminate this lease at any time with 3 month
-              notice to the other party. The tenant agrees not to assign or
-              sublease his/her interest.{" "}
-            </p>
-            <p>
-              10. The terms of this lease may be amended by mutual consent.{" "}
-            </p>
-            <p>
-              11. A default in any of these provisions by either party may be
-              cured upon written notice by the other party within 30 days of
-              receipt of such notice. Any disputes occurring from this lease may
-              be resolved by standard mediation practices, if necessary.{" "}
-            </p>
-            <p>
-              12. Landowner retains his/her right to access the parcel(s) for
-              the purposes of inspection with prior notification to the tenant.
-            </p>
-            <Button onClick={this.handleCloseModal}>
-              I agree to the terms of the agreement
-            </Button>
-          </ReactModal>
-        </ButtonDiv>
-      </MainDiv>
-    );
-  }
+                                <p>
+                                    4. Permitted Uses: The tenant is permitted all normal activities
+                                    associated with the above purposes, including but not limited to:
+                                    The tenant agrees to employ standard best management practices. It
+                                    shall not be considered a default of this Lease if weather or
+                                    other circumstance prevents timely practices or harvesting.{" "}
+                                </p>
+
+                                <p>
+                                    5. Prohibited Uses: The tenant shall not, unless by mutual
+                                    agreement to the contrary, engage in any of the following
+                                    activities on said parcel(s):{" "}
+                                </p>
+                                <p>
+                                    6. The tenant agrees to prepare an annual management plan for
+                                    review by the landlord, complete annual soil testing, and apply
+                                    amendments as indicated at his/her own expense. The tenant agrees
+                                    to proper disposal of trash and waste. The tenant further agrees:{" "}
+                                </p>
+                                <p>
+                                    7. The [landowner/tenant] agrees to pay all taxes and assessments
+                                    associated with this parcel.{" "}
+                                </p>
+                                <p>
+                                    8. The farmer agrees to provide the landowner with evidence of
+                                    liability insurance coverage.{" "}
+                                </p>
+                                <p>
+                                    9. Either party may terminate this lease at any time with 3 month
+                                    notice to the other party. The tenant agrees not to assign or
+                                    sublease his/her interest.{" "}
+                                </p>
+                                <p>
+                                    10. The terms of this lease may be amended by mutual consent.{" "}
+                                </p>
+                                <p>
+                                    11. A default in any of these provisions by either party may be
+                                    cured upon written notice by the other party within 30 days of
+                                    receipt of such notice. Any disputes occurring from this lease may
+                                    be resolved by standard mediation practices, if necessary.{" "}
+                                </p>
+                                <p>
+                                    12. Landowner retains his/her right to access the parcel(s) for
+                                    the purposes of inspection with prior notification to the tenant.
+                                </p>
+                                <div className="row align-items-center justify-content-between">
+                                    <Button onClick={this.handleCloseModal}>
+                                        I agree to the terms of the agreement
+                                    </Button>
+                                    <Button className="bg-danger" onClick={this.handleCloseModal}>
+                                        Cancel
+                                    </Button>
+                                </div>
+
+                            </ReactModal>
+                        </ButtonDiv>
+                    </MainDiv> : <div className="text-center">
+                        <h5>
+                            Could not load land
+                        </h5>
+                    </div>
+        );
+    }
 }
+
 export default withFirebase(LandDetails);

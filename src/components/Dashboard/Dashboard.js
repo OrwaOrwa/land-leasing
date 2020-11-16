@@ -128,6 +128,7 @@ export const LeaseInputDiv = styled.div`
   flex-flow: row nowrap;
   align-items: baseline;
   justify-content: space-between;
+  margin-bottom: 1.2rem;
   width: 100%;
 `;
 
@@ -148,145 +149,9 @@ export const Alert = styled.p`
 `;
 
 class Dashboard extends Component {
-    state = {
-        pageLoading: false,
-        landName: "",
-        landPrice: "",
-        landSize: "",
-        landDescription: "",
-        landLocation: "",
-        landImageUrl: "",
-        suitableCrop: "",
-        landProgress: 0,
-        isUploadingLand: false,
-        productName: "",
-        productPrice: "",
-        productDescription: "",
-        productImageUrl: "",
-        productProgress: 0,
-        merchantName: "",
-        merchantContact: "",
-        isUploadingProduct: false,
-        userDetails: {},
-        userRole: "",
-        isUploading: false,
-        deedProgress: 0,
-        lessorName: "",
-        expiryDate: "",
-        lessorContact: "",
-        landFinished: false,
-        productFinished: false,
-    };
-
     componentDidMount() {
         this.setState({pageLoading: true});
     }
-
-    handleChange = (event) => {
-        let name = event.target.name;
-        this.setState({[name]: event.target.value});
-    };
-
-    // checks the upload progress.
-    handleUploadLandStart = () =>
-        this.setState({isUploadingLand: true, landProgress: 0});
-    handleLandProgress = (landProgress) => this.setState({landProgress});
-
-    // checks for errors while uploading
-    handleUploadLandError = (error) => {
-        this.setState({isUploadingLand: false});
-        console.error(error);
-    };
-
-    // uploads the image to firebase storage.
-    handleUploadLandSuccess = (filename) => {
-        this.setState({
-            landImageUrl: filename,
-            landProgress: 100,
-            isUploadingLand: false,
-        });
-    };
-
-    // checks the upload progress.
-    handleUploadTitleDeedStart = () =>
-        this.setState({isUploadingDeed: true, deedProgress: 0});
-    handleTitleDeedProgress = (deedProgress) => this.setState({deedProgress});
-
-    // checks for errors while uploading
-    handleUploadTitleDeedError = (error) => {
-        this.setState({isUploadingDeed: false});
-        console.error(error);
-    };
-
-    // uploads the image to firebase storage.
-    handleUploadTitleDeedSuccess = (filename) => {
-        this.setState({
-            deedImageUrl: filename,
-            deedProgress: 100,
-            isUploadingDeed: false,
-        });
-        /*this.props.firebase
-          .addLandImage()
-          .child(filename)
-          .getDownloadURL()
-          .then((url) => this.setState({ deedImageUrl: url }));*/
-    };
-
-    handleLandUpload = (event) => {
-        event.preventDefault();
-        const {
-            landName,
-            landPrice,
-            landSize,
-            landDescription,
-            landLocation,
-            suitableCrop,
-            landImageUrl,
-            deedImageUrl,
-            lessorName,
-            lessorContact,
-            expiryDate,
-        } = this.state;
-
-        this.setState({landFinished: true});
-    };
-
-    // methods to handle the product upload
-
-    // checks the upload progress.
-    handleUploadProductStart = () =>
-        this.setState({isUploadingProduct: true, productProgress: 0});
-    handleProductProgress = (productProgress) =>
-        this.setState({productProgress});
-
-    // checks for errors while uploading
-    handleUploadProductError = (error) => {
-        this.setState({isUploadingProduct: false});
-        console.error(error);
-    };
-
-    // uploads the image to firebase storage.
-    handleUploadProductSuccess = (filename) => {
-        this.setState({
-            productImageUrl: filename,
-            productProgress: 100,
-            isUploadingProduct: false,
-        });
-    };
-
-    handleProductUpload = (event) => {
-        event.preventDefault();
-        const {
-            productName,
-            productPrice,
-            productDescription,
-            productImageUrl,
-            merchantName,
-            merchantContact,
-        } = this.state;
-
-        this.setState({productFinished: true});
-    };
 
     render() {
         const user = getUserObject();

@@ -1,0 +1,61 @@
+:root {
+  --primary-color: #e5e8eb;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.loader-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 5%;
+  padding: 10px;
+  animation: loader-rectangle-bg 1s infinite;
+  animation-direction: alternate;
+}
+
+@keyframes loader-rectangle-bg {
+  from {
+    background-color: #DCDCDC;
+  }
+  to {
+    background-color: #C0C0C0;
+  }
+}
+
+.img-responsive {
+  width: 100%;
+  height: 10rem;
+  object-fit: cover;
+}
+
+.input-main-border {
+  border: 1px solid #e5e8eb;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.input-main-border > .form-control {
+  border: none;
+}
+
+.input-main-border-icon > .input-group-text {
+  border: none !important;
+}
+
+.input-main-border:focus {
+  border-color: #626be3;
+  box-shadow: none;
+}
+
+.input-main-border:active {
+  border-color: #626be3;
+}
+
+.input-main-border > .form-control:focus {
+  outline: 0 !important;
+  box-shadow: none;
+  border: none;
+  background-color: transparent;
+}

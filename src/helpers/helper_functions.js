@@ -1,4 +1,5 @@
 import swal from "sweetalert2";
+import Swal from "sweetalert2";
 
 export const parseTime = (t) => {
     let d = new Date();
@@ -70,4 +71,41 @@ export const asyncShowAlert = async (type, title) => {
         icon: type,
         timerProgressBar: true
     });
+}
+
+export const handleChange = (e, self) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    self.setState({[name]: value});
+}
+
+export const handleChangeData = (e, self) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    let data = {...self.state.data};
+    data[name] = value;
+    self.setState({data: data});
+}
+
+export const showAlert = (type, title, body) => {
+    Swal.fire({
+        title: title,
+        timer: 5000,
+        icon: type,
+        text: body,
+        timerProgressBar: true,
+    }).then();
+}
+
+export const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+export const toTitleCase = (str) => {
+    return str.replace(
+        /\w\S*/g,
+        function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+    );
 }

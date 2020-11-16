@@ -1,8 +1,15 @@
-import React, { Component } from "react";
-import { withFirebase } from "../Firebase";
-import { Link } from "react-router-dom";
+import React, {Component} from "react";
+import {withFirebase} from "../Firebase";
+import {Link} from "react-router-dom";
 import styled from "styled-components";
-import renderIf from "render-if";
+import {makeRequest} from "../../helpers/network_utils";
+import {GET_REQUEST} from "../../values/globals";
+import endpoints from "../../constants/endpoints";
+import {parseErrorResponse, showAlert} from "../../helpers/helper_functions";
+import noImage from '../../assets/img/404.png';
+import AddImageModal from "./add_land_images_modal";
+
+const $ = window.$;
 
 const ItemsContainer = styled.div`
   margin-top: 1.3em;
@@ -81,90 +88,85 @@ const Button = styled.button`
   border-radius: 8px;
   cursor: pointer;
 `;
+
 class ListedHouses extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      listedLand: [],
-      landLoading: false,
-      error: "",
-    };
-  }
+    state = {
+        loading: false,
+        lands: []
+    }
 
-  componentDidMount() {
-    const userID = localStorage.getItem("uid");
-    window.scrollTo(0, 0);
-    this.setState({ landLoading: true });
-    this.props.firebase
-      .land()
-      .orderByChild("userID")
-      .equalTo(userID)
-      .on("value", (snapshot) => {
-        const landObject = snapshot.val();
-        const landList = Object.keys(landObject).map((key) => ({
-          ...landObject[key],
-          id: key,
-        }));
-        if (landList.length !== 0) {
-          this.setState({
-            listedLand: landList,
-            landLoading: false,
-          });
-        } else {
-          this.setState({ error: "Empty" });
-        }
-        console.log(this.state.listedLand);
-      });
-  }
-  // removing listener to prevent memory leaks
-  componentWillUnmount() {
-    this.props.firebase
-      .land()
-      .orderByChild("userID")
-      .equalTo(this.props.firebase.auth.currentUser.uid)
-      .off();
-  }
+    componentDidMount() {
+        this.getLands()
+    }
 
-  render() {
-    return (
-      <div className="listed-land-page">
-        <ItemsContainer>
-          <ItemsName>Land Available</ItemsName>
-          {renderIf(this.state.landLoading === true)(<div>Loading...</div>)}
-          {renderIf(this.state.listedLand === null)(
-            <div>You have not listed any land</div>
-          )}
-          {renderIf(this.state.landLoading === false)(
-            <ItemsDiv>
-              {this.state.listedLand.map((land) => (
-                <Link
-                  to={`edit-land/${land.id}`}
-                  style={{ textDecoration: "none", color: "black" }}
-                  key={land.id}
-                >
-                  <Item>
-                    <ItemImageDiv>
-                      <Image src={land.image} alt={land.name}></Image>
-                    </ItemImageDiv>
-                    <ItemDetailsDiv>
-                      <ItemName>{land.name}</ItemName>
-                      <Crops>{land.suitableCrop}</Crops>
-                      <Link
-                        to={`edit-land/${land.id}`}
-                        style={{ textDecoration: "none", color: "black" }}
-                      >
-                        <Button>Edit</Button>
-                      </Link>
-                    </ItemDetailsDiv>
-                  </Item>
-                </Link>
-              ))}
-            </ItemsDiv>
-          )}
-        </ItemsContainer>
-      </div>
-    );
-  }
+    getLands = () => {
+        this.setState({
+            loading: true
+        })
+        makeRequest(GET_REQUEST, `${endpoints.farmers_lands}`, {}, response => {
+            this.setState({
+                lands: response.data
+            })
+        }, error => {
+            showAlert('error', 'Error', parseErrorResponse(error))
+        }, () => {
+            this.setState({
+                loading: false
+            })
+        })
+    }
+
+    render() {
+        const {loading, lands} = this.state;
+        return (
+            loading ?
+                <div className="text-center">
+                    <h5>Loading....</h5>
+                </div> :
+                lands.length < 1 ?
+                    <div className="text-center">
+                        <h5>You haven't yet uploaded any lands</h5>
+                    </div> :
+                    <div className="listed-land-page">
+                        <AddImageModal/>
+                        <ItemsContainer>
+                            <ItemsName>Land Available</ItemsName>
+                            <ItemsDiv>
+                                {lands.map((land) => (
+                                    <Link
+                                        to={`edit-land/${land.id}`}
+                                        style={{textDecoration: "none", color: "black"}}
+                                        key={land.id}
+                                    >
+                                        <Item>
+                                            <ItemImageDiv>
+                                                <Image src={land.image.length > 0 ? land.image[0].image : noImage}
+                                                       alt={land.name}/>
+                                            </ItemImageDiv>
+                                            <ItemDetailsDiv>
+                                                <ItemName>{land.name}</ItemName>
+                                                <Crops>{land.crops}</Crops>
+                                                <Link
+                                                    to={`/lands/${land.id}`}
+                                                    style={{textDecoration: "none", color: "black"}}
+                                                >
+                                                    <Button>View</Button>
+                                                </Link>
+                                                <Button onClick={e => {
+                                                    e.preventDefault();
+                                                    $('#addImageModal').modal('show');
+                                                }} className="my-2 bg-info" style={{textDecoration: "none"}}>
+                                                    Add Images
+                                                </Button>
+                                            </ItemDetailsDiv>
+                                        </Item>
+                                    </Link>
+                                ))}
+                            </ItemsDiv>
+                        </ItemsContainer>
+                    </div>
+        );
+    }
 }
 
 export default withFirebase(ListedHouses);

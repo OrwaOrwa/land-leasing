@@ -27,10 +27,11 @@ const App = () => (
         <Route path={ROUTES.SIGN_IN} component={SignIn}/>
         <Route path={ROUTES.DASHBOARD} component={Dashboard}/>
         {/*<Route path={ROUTES.SIGN_UP} component={SignUp} />*/}
-        {/*<Route path={ROUTES.LANDDETAILS} component={LandDetails} />
-    <Route path={ROUTES.BLOG} component={Blog} />
+        <Route exact={true} path={ROUTES.VIEWLAND} component={ViewLand}/>
+        <Route exact={true} path={ROUTES.LANDDETAILS} component={LandDetails}/>
+        {/*<Route path={ROUTES.BLOG} component={Blog} />
     <Route path={ROUTES.PAYMENTS} component={Payments} />
-    <Route path={ROUTES.VIEWLAND} component={ViewLand} />
+
     <Route path={ROUTES.EDITLAND} component={EditLand} />
     <Route path={ROUTES.ADMIN} component={Admin} />*/}
         <Footer/>
