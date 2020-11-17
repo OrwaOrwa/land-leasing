@@ -48,7 +48,7 @@ class AddImageModal extends Component {
     uploadImage = () => {
         let {images} = this.state;
         if (images.length < 1) return;
-        const {id} = this.props.match.params;
+        const {id} = this.props.match?.params;
         this.setState({
             loading: true,
             images: images,

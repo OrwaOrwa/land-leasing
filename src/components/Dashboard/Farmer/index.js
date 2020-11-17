@@ -24,6 +24,8 @@ import endpoints from "../../../constants/endpoints";
 import Swal from "sweetalert2";
 import {handleChangeData} from "../../../helpers/helper_functions";
 import debounce from "@material-ui/core/utils/debounce";
+import ReactModal from "react-modal";
+import Button from "@material-ui/core/Button";
 
 class FarmerDashboard extends Component {
 
@@ -32,6 +34,7 @@ class FarmerDashboard extends Component {
         loading: false,
         loadingSearch: false,
         errors: {},
+        showChatModal: false,
         search_results: []
     }
 
@@ -84,6 +87,14 @@ class FarmerDashboard extends Component {
         this.setState({data: data});
     }
 
+    handleOpenChatModal = () => {
+        this.setState({showChatModal: true});
+    };
+
+    handleCloseChatModal = () => {
+        this.setState({showChatModal: false});
+    };
+
     render() {
         const user = getUserObject();
         const {data, errors, loading, loadingSearch, search_results} = this.state;
@@ -97,10 +108,25 @@ class FarmerDashboard extends Component {
                         </Name>
                         <ActionDiv>
                             <Links>Add Land</Links>
-                            <Link to={ROUTES.VIEWLAND}>
-                                <Links>View Land</Links>
+                            <Link to={`${ROUTES.VIEWLAND}`}>
+                                <Links>All Land</Links>
                             </Link>
-                            <Links>Chats</Links>
+                            <Link to={`${ROUTES.SOLD_LAND}`}>
+                                <Links>Sold Land</Links>
+                            </Link>
+                            <Button onClick={this.handleOpenChatModal}>Chats</Button>
+                            <ReactModal
+                                isOpen={this.state.showChatModal}
+                                contentLabel="Chat">
+                                <div className="d-flex flex-column h-100">
+                                    <iframe style={{width: "100%", height: "100%"}}
+                                            src="https://go-chat.netlify.app/"
+                                            title="description"/>
+                                    <Button className="bg-danger my-2" onClick={this.handleCloseChatModal}>
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </ReactModal>
                         </ActionDiv>
                         <SignOut/>
                     </ProfileDiv>

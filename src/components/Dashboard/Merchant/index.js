@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import SignOut from "../../SignOut";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import renderIf from "render-if";
 import {
-    ActionDiv, Alert, DescInput,
+    ActionDiv,
+    DescInput,
     FormDiv,
     Input,
     InputDiv,
@@ -13,23 +12,67 @@ import {
     Name,
     ProfileDiv,
     Title,
-    TopDiv, UploadButton
+    TopDiv,
+    UploadButton
 } from "../Dashboard";
+import {getUserObject} from "../../../helpers/login";
+import {makeRequest} from "../../../helpers/network_utils";
+import {POST_REQUEST} from "../../../values/globals";
+import endpoints from "../../../constants/endpoints";
+import Swal from "sweetalert2";
+import {handleChangeData} from "../../../helpers/helper_functions";
 
 class MerchantDashboard extends Component {
+
+    state = {
+        data: {},
+        loading: false,
+        errors: {},
+    }
+
+    handleSubmit = () => {
+        this.setState({
+            loading: true
+        })
+        const {data} = this.state;
+        let formData = new FormData();
+
+        let keys = Object.keys(data);
+
+        for (let i = 0; i < keys.length; i++) {
+            let key = keys[i];
+            formData.append(key, data[key]);
+        }
+        makeRequest(POST_REQUEST, `${endpoints.merchants_products}`, formData, () => {
+            Swal.fire(
+                'Success!',
+                'Product added successfully!',
+                'success'
+            ).then();
+        }, (error) => {
+            this.setState({
+                errors: error.response.data
+            })
+        }, () => {
+            this.setState({loading: false})
+        })
+    }
+
     render() {
+        const user = getUserObject();
+        const {loading, data, errors} = this.state;
         return (
             <MainDiv>
                 <Title>Dashboard</Title>
                 <TopDiv>
                     <ProfileDiv>
                         <Name>
-                            {this.state.userDetails.firstName}{" "}
-                            {this.state.userDetails.lastName}
+                            {user.firstName}{" "}
+                            {user.lastName}
                         </Name>
                         <ActionDiv>
                             <Links>Add Product/Service</Links>
-                            <Links>Edit Product/Service</Links>
+                          {/*  <Links>Edit Product/Service</Links>*/}
                         </ActionDiv>
                         <SignOut/>
                     </ProfileDiv>
@@ -38,76 +81,70 @@ class MerchantDashboard extends Component {
                             <Label>Product/Service</Label>
                             <Input
                                 type="text"
-                                value={this.state.productName}
-                                name="productName"
-                                onChange={this.handleChange}
+                                value={data?.name}
+                                name="name"
+                                onChange={e => handleChangeData(e, this)}
                             />
+                            {errors.name && (
+                                <p className="mb-0 small text-danger">{errors.name[0]}</p>
+                            )}
                         </InputDiv>
                         <InputDiv>
-                            <Label>Name of Organization/Individual</Label>
+                            <Label>Name of Organization</Label>
                             <Input
                                 type="text"
-                                value={this.state.merchantName}
-                                name="merchantName"
-                                onChange={this.handleChange}
+                                value={data?.organization_name}
+                                name="organization_name"
+                                onChange={e => handleChangeData(e, this)}
                             />
+                            {errors.organization_name && (
+                                <p className="mb-0 small text-danger">{errors.organization_name[0]}</p>
+                            )}
                         </InputDiv>
                         <InputDiv>
                             <Label>Price</Label>
                             <Input
-                                type="text"
-                                value={this.state.productPrice}
-                                name="productPrice"
-                                onChange={this.handleChange}
+                                type="number"
+                                value={data?.price}
+                                name="price"
+                                onChange={e => handleChangeData(e, this)}
                             />
-                        </InputDiv>
-                        <InputDiv>
-                            <Label>Contact</Label>
-                            <Input
-                                type="text"
-                                value={this.state.merchantContact}
-                                name="merchantContact"
-                                onChange={this.handleChange}
-                            />
+                            {errors.price && (
+                                <p className="mb-0 small text-danger">{errors.price[0]}</p>
+                            )}
                         </InputDiv>
                         <InputDiv>
                             <Label>Brief Description</Label>
                             <DescInput
                                 type="text"
-                                value={this.state.productDescription}
-                                name="productDescription"
-                                onChange={this.handleChange}
+                                value={data?.description}
+                                name="description"
+                                onChange={e => handleChangeData(e, this)}
                             />
+                            {errors.description && (
+                                <p className="mb-0 small text-danger">{errors.description[0]}</p>
+                            )}
                         </InputDiv>
                         <InputDiv>
                             <Label>Upload Product Image</Label>
-                            {/*<FileUploader
-                    className="file-uploader"
-                    accept="image/*"
-                    name="productImageUrl"
-                    randomizeFilename
-                    storageRef={this.props.firebase.addProductImage()}
-                    onUploadStart={this.handleUploadProductStart}
-                    onUploadError={this.handleUploadProductError}
-                    onUploadSuccess={this.handleUploadProductSuccess}
-                    onProgress={this.handleProductProgress}
-                  />*/}
-                            {this.state.isUploadingProduct && (
-                                <p className="progress">
-                                    Progress:{" "}
-                                    <LinearProgress
-                                        className=""
-                                        valueBuffer={this.state.productProgress}
-                                    />
-                                </p>
+                            <Input
+                                name="image"
+                                accept="image/*"
+                                onChange={event => this.setState({
+                                    data: {
+                                        ...data,
+                                        image: event.target.files[0]
+                                    }
+                                })}
+                                type="file"
+                            />
+                            {errors.image && (
+                                <p className="mb-0 small text-danger">{errors.image[0]}</p>
                             )}
                         </InputDiv>
-                        <UploadButton type="submit" onClick={this.handleProductUpload}>
-                            Upload
+                        <UploadButton disabled={loading} onClick={this.handleSubmit}>
+                            {loading ? "Loading" : "Upload"}
                         </UploadButton>
-                        {renderIf(this.state.landFinished === true)(
-                            <Alert>Product Uploaded successfully!</Alert>
-                        )}
                     </FormDiv>
                 </TopDiv>
             </MainDiv>

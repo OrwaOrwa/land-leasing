@@ -28,7 +28,7 @@ class LandsList extends Component {
                             <ItemsDiv>
                                 {lands.map((land) => (
                                     <Link
-                                        to={`land-details/${land.id}`}
+                                        to={`lands/${land.id}`}
                                         style={{textDecoration: "none", color: "black"}}
                                         key={land.id}
                                     >

@@ -1,6 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import LandImage from "../../resources/images/home_farmland.png";
+import {makeRequest} from "../../helpers/network_utils";
+import {GET_REQUEST} from "../../values/globals";
+import endpoints from "../../constants/endpoints";
+import {parseErrorResponse, showAlert} from "../../helpers/helper_functions";
+import {getUserObject} from "../../helpers/login";
+import {Link} from "react-router-dom";
 
 const MainDiv = styled.div`
   padding: 1em;
@@ -12,7 +17,7 @@ const MainDiv = styled.div`
 
 const MainBlogDiv = styled.div`
   height: auto;
-  width: 60%;
+  width: 100%;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -37,15 +42,15 @@ const BlogDiv = styled.div`
   jutify-content: center;
 `;
 
-const BlogTitle = styled.h3`
+/*const BlogTitle = styled.h3`
   font-family: Helvetica;
   font-style: normal;
   font-size: 1.5em;
   font-weight; 500;
   color: black;
-`;
+`;*/
 
-const BlogImage = styled.div`
+/*const BlogImage = styled.div`
   height: ${(props) => (props.short ? "20vh" : "40vh")};
   width: ${(props) => (props.thin ? "15vw" : "50vw")};
   border: none;
@@ -113,98 +118,88 @@ const OtherBlog = styled.div`
 const OtherBlogInfo = styled.div`
   height: auto;
   margin-left: 1em;
-`;
+`;*/
 
-function Blog() {
-  return (
-    <MainDiv>
-      <MainBlogDiv>
-        <Title>Agricultural Blog</Title>
-        <BlogDiv>
-          <BlogTitle>Climatic Conditions In Kenya</BlogTitle>
-          <BlogImage>
-            <Image src={LandImage} alt="image"></Image>
-          </BlogImage>
-          <BlogContentDiv>
-            <Paragraph>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Faucibus pulvinar elementum integer enim neque. Et ligula
-              ullamcorper malesuada proin libero nunc. Quam adipiscing vitae
-              proin sagittis. Aliquam etiam erat velit scelerisque. Risus
-              commodo viverra maecenas accumsan lacus vel facilisis volutpat
-              est. In metus vulputate eu scelerisque felis imperdiet proin
-              fermentum. Vestibulum lorem sed risus ultricies tristique nulla
-              aliquet enim. Maecenas volutpat blandit aliquam etiam. Tortor
-              pretium viverra suspendisse potenti. Diam quis enim lobortis
-              scelerisque fermentum dui faucibus in ornare. Aenean sed
-              adipiscing diam donec. Nunc aliquet bibendum enim facilisis
-              gravida neque. Suspendisse ultrices gravida dictum fusce ut
-              placerat. Cursus mattis molestie a iaculis at erat pellentesque
-              adipiscing. Tellus elementum sagittis vitae et leo duis ut diam.
-            </Paragraph>
-            <Paragraph>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Faucibus pulvinar elementum integer enim neque. Et ligula
-              ullamcorper malesuada proin libero nunc. Quam adipiscing vitae
-              proin sagittis. Aliquam etiam erat velit scelerisque. Risus
-              commodo viverra maecenas accumsan lacus vel facilisis volutpat
-              est. In metus vulputate eu scelerisque felis imperdiet proin
-              fermentum. Vestibulum lorem sed risus ultricies tristique nulla
-              aliquet enim. Maecenas volutpat blandit aliquam etiam. Tortor
-              pretium viverra suspendisse potenti. Diam quis enim lobortis
-              scelerisque fermentum dui faucibus in ornare. Aenean sed
-              adipiscing diam donec. Nunc aliquet bibendum enim facilisis
-              gravida neque. Suspendisse ultrices gravida dictum fusce ut
-              placerat. Cursus mattis molestie a iaculis at erat pellentesque
-              adipiscing. Tellus elementum sagittis vitae et leo duis ut diam.
-            </Paragraph>
-            <Paragraph>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Faucibus pulvinar elementum integer enim neque. Et ligula
-              ullamcorper malesuada proin libero nunc. Quam adipiscing vitae
-              proin sagittis. Aliquam etiam erat velit scelerisque. Risus
-              commodo viverra maecenas accumsan lacus vel facilisis volutpat
-              est. In metus vulputate eu scelerisque felis imperdiet proin
-              fermentum. Vestibulum lorem sed risus ultricies tristique nulla
-              aliquet enim. Maecenas volutpat blandit aliquam etiam. Tortor
-              pretium viverra suspendisse potenti. Diam quis enim lobortis
-              scelerisque fermentum dui faucibus in ornare. Aenean sed
-              adipiscing diam donec. Nunc aliquet bibendum enim facilisis
-              gravida neque. Suspendisse ultrices gravida dictum fusce ut
-              placerat. Cursus mattis molestie a iaculis at erat pellentesque
-              adipiscing. Tellus elementum sagittis vitae et leo duis ut diam.
-            </Paragraph>
-          </BlogContentDiv>
-        </BlogDiv>
-      </MainBlogDiv>
-      <OtherBlogs>
-        <Heading>Related Information</Heading>
-        <OthersDiv>
-          <OtherBlog>
-            <BlogImage short thin>
-              <Image src={LandImage} alt="Land Image"></Image>
-            </BlogImage>
-            <OtherBlogInfo>
-              <h4>Soil Types In Kenya</h4>
-              <p>By A.L.L</p>
-            </OtherBlogInfo>
-          </OtherBlog>
-          <OtherBlog>
-            <BlogImage short thin>
-              <Image src={LandImage} alt="Land Image"></Image>
-            </BlogImage>
-            <OtherBlogInfo>
-              <h4>Soil Types In Kenya</h4>
-              <p>By A.L.L</p>
-            </OtherBlogInfo>
-          </OtherBlog>
-        </OthersDiv>
-      </OtherBlogs>
-    </MainDiv>
-  );
+const parse = require('html-react-parser');
+
+class Blog extends React.Component {
+
+    state = {
+        loading: false,
+        blog: []
+    }
+
+    componentDidMount() {
+        this.getBlog()
+    }
+
+    getBlog = () => {
+        const {id} = this.props.match.params;
+        this.setState({
+            loading: true
+        })
+        makeRequest(GET_REQUEST, `${endpoints.blogs}${id}`, {}, response => {
+            this.setState({
+                blog: response.data
+            })
+        }, error => {
+            showAlert('error', 'Blog Error', parseErrorResponse(error))
+        }, () => {
+            this.setState({
+                loading: false
+            })
+        })
+    }
+
+    render() {
+        const {blog, loading} = this.state;
+        const user = getUserObject();
+        return (
+            loading ?
+                <div className="text-center p-5 m-5">
+                    Loading blog...
+                </div> :
+                <MainDiv>
+                    <MainBlogDiv>
+                        <div className="d-flex justify-content-between w-100">
+                            <Title>{blog?.title ?? "-"}</Title>
+                            {
+                                user.role === "admin" &&
+                                <Link to={`/blog/edit/${blog?.id}`} className="btn btn-success">
+                                    Edit
+                                </Link>
+                            }
+                        </div>
+                        <BlogDiv className="my-5">
+                            {parse(blog?.body || "")}
+                        </BlogDiv>
+                    </MainBlogDiv>
+                    {/*<OtherBlogs>
+                        <Heading>Related Information</Heading>
+                        <OthersDiv>
+                            <OtherBlog>
+                                <BlogImage short thin>
+                                    <Image src={LandImage} alt="Land Image"></Image>
+                                </BlogImage>
+                                <OtherBlogInfo>
+                                    <h4>Soil Types In Kenya</h4>
+                                    <p>By A.L.L</p>
+                                </OtherBlogInfo>
+                            </OtherBlog>
+                            <OtherBlog>
+                                <BlogImage short thin>
+                                    <Image src={LandImage} alt="Land Image"/>
+                                </BlogImage>
+                                <OtherBlogInfo>
+                                    <h4>Soil Types In Kenya</h4>
+                                    <p>By A.L.L</p>
+                                </OtherBlogInfo>
+                            </OtherBlog>
+                        </OthersDiv>
+                    </OtherBlogs>*/}
+                </MainDiv>
+        );
+    }
 }
 
 export default Blog;

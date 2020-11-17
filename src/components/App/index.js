@@ -16,6 +16,8 @@ import Payments from "../Payments/Payments";
 import ViewLand from "../ViewLand/ViewLand";
 import EditLand from "../EditLand/EditLand";
 import Admin from "../Admin/Admin";
+import BlogList from "../Blog/List";
+import EditBlog from "../Dashboard/Admin/Edit";
 
 const App = () => (
     <Router>
@@ -26,12 +28,15 @@ const App = () => (
         <Route path={ROUTES.PRODUCTS} component={Products}/>
         <Route path={ROUTES.SIGN_IN} component={SignIn}/>
         <Route path={ROUTES.DASHBOARD} component={Dashboard}/>
-        {/*<Route path={ROUTES.SIGN_UP} component={SignUp} />*/}
+        <Route path={ROUTES.SIGN_UP} component={SignUp}/>
         <Route exact={true} path={ROUTES.VIEWLAND} component={ViewLand}/>
+        <Route exact={true} path={ROUTES.VIEW_PENDING_LAND} component={ViewLand}/>
+        <Route exact={true} path={ROUTES.SOLD_LAND} component={ViewLand}/>
         <Route exact={true} path={ROUTES.LANDDETAILS} component={LandDetails}/>
-        {/*<Route path={ROUTES.BLOG} component={Blog} />
-    <Route path={ROUTES.PAYMENTS} component={Payments} />
-
+        <Route exact={true} path={ROUTES.BLOG} component={BlogList}/>
+        <Route exact={true} path={ROUTES.BLOG_DETAILS} component={Blog}/>
+        <Route exact={true} path={ROUTES.BLOG_EDIT} component={EditBlog}/>
+        {/*
     <Route path={ROUTES.EDITLAND} component={EditLand} />
     <Route path={ROUTES.ADMIN} component={Admin} />*/}
         <Footer/>

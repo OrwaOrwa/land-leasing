@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import "./index.css";
 import styled from "styled-components";
 import {getProducts} from "../../providers/Products";
+import Button from "@material-ui/core/Button";
+import ReactModal from "react-modal";
 
 const MainDiv = styled.div`
   padding: 0.5em;
@@ -149,16 +151,37 @@ class Products extends Component {
     state = {
         loadingProducts: false,
         products: [],
+        showChatModal: false
     };
 
     componentDidMount() {
         getProducts(this);
     }
 
+    handleOpenChatModal = (product) => {
+        this.setState({showChatModal: true, product: product});
+    };
+
+    handleCloseChatModal = () => {
+        this.setState({showChatModal: false});
+    };
+
     render() {
-        const {products, loadingProducts} = this.state;
+        const {products, loadingProducts, product} = this.state;
         return (
             <MainDiv>
+                <ReactModal
+                    isOpen={this.state.showChatModal}
+                    contentLabel="Chat">
+                    <div className="d-flex flex-column flex-wrap">
+                        <h5>{product?.merchant?.name}</h5>
+                        <h5>Email: {product?.merchant?.email}</h5>
+                        <h5>Phone Number: {product?.merchant?.phone_number}</h5>
+                        <Button className="bg-danger my-2" onClick={this.handleCloseChatModal}>
+                            Close
+                        </Button>
+                    </div>
+                </ReactModal>
                 <TopDiv>
                     <InnerDiv>
                         <Title>All Products/Services</Title>
@@ -185,9 +208,10 @@ class Products extends Component {
                                     </ItemDetails>
                                     <ItemExtraDetails>
                                         <ItemPrice>Ksh. {product.price}</ItemPrice>
-                                        <ContactButton>
+                                        <Button onClick={() => this.handleOpenChatModal(product)}
+                                                className="btn btn-lg bg-success">
                                             <MerchantContact>Contact Merchant</MerchantContact>
-                                        </ContactButton>
+                                        </Button>
                                     </ItemExtraDetails>
                                 </Item>
                             ))

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {getUserObject} from "../../../helpers/login";
 import {
-    ActionDiv, DescInput,
+    ActionDiv,
     FormDiv,
     Input,
     InputDiv,
@@ -11,16 +11,17 @@ import {
     Name,
     ProfileDiv,
     Title,
-    TopDiv, UploadButton
+    TopDiv,
+    UploadButton
 } from "../Dashboard";
 import SignOut from "../../SignOut";
-import {handleChangeData} from "../../../helpers/helper_functions";
+import {handleChangeData, parseErrorResponse, showAlert} from "../../../helpers/helper_functions";
 import {makeRequest} from "../../../helpers/network_utils";
-import {POST_REQUEST} from "../../../values/globals";
+import {GET_REQUEST, PATCH_REQUEST} from "../../../values/globals";
 import endpoints from "../../../constants/endpoints";
 import Swal from "sweetalert2";
 
-class AdminDashboard extends Component {
+class EditBlog extends Component {
 
     state = {
         data: {},
@@ -29,6 +30,11 @@ class AdminDashboard extends Component {
     }
 
     componentDidMount() {
+        this.instantiateSummerNote();
+        this.getBlog();
+    }
+
+    instantiateSummerNote = () => {
         window.$("#body").summernote({
             toolbar: [
                 ['style', ['style']],
@@ -48,23 +54,47 @@ class AdminDashboard extends Component {
         });
     }
 
+    getBlog = () => {
+        const {id} = this.props.match.params;
+        this.setState({
+            loading: true
+        })
+        makeRequest(GET_REQUEST, `${endpoints.blogs}${id}`, {}, response => {
+            let data = {...response.data};
+            //data.body = data.body.replace(/(<([^>]+)>)/gi, "");
+            this.setState({
+                    data: data
+                }, () => {
+                    window.$("#body").summernote('code', data.body);
+                }
+            )
+        }, error => {
+            showAlert('error', 'Blog Error', parseErrorResponse(error))
+        }, () => {
+            this.setState({
+                loading: false
+            })
+        })
+    }
+
     handleSubmit = () => {
+        const {id} = this.props.match.params;
         this.setState({
             loading: true
         })
         const {data} = this.state;
-        let formData = new FormData();
+        /*let formData = new FormData();
 
         let keys = Object.keys(data);
 
         for (let i = 0; i < keys.length; i++) {
             let key = keys[i];
             formData.append(key, data[key]);
-        }
-        makeRequest(POST_REQUEST, `${endpoints.admin_blogs}`, formData, () => {
+        }*/
+        makeRequest(PATCH_REQUEST, `${endpoints.admin_blogs}${id}`, data, () => {
             Swal.fire(
                 'Success!',
-                'Blog added successfully!',
+                'Blog edited successfully!',
                 'success'
             ).then();
         }, (error) => {
@@ -89,7 +119,7 @@ class AdminDashboard extends Component {
                             {user.lastName}
                         </Name>
                         <ActionDiv>
-                            <Links>Add Blog</Links>
+                            <Links>Edit Blog</Links>
                             {/*  <Links>Edit Product/Service</Links>*/}
                         </ActionDiv>
                         <SignOut/>
@@ -99,7 +129,7 @@ class AdminDashboard extends Component {
                             <Label>Blog Title</Label>
                             <Input
                                 type="text"
-                                value={data?.title}
+                                value={data?.title ?? ""}
                                 name="title"
                                 onChange={e => handleChangeData(e, this)}
                             />
@@ -109,13 +139,13 @@ class AdminDashboard extends Component {
                         </InputDiv>
                         <InputDiv>
                             <Label>Body</Label>
-                            <textarea id="body" required/>
+                            <textarea id="body" value={data?.body ?? ""} required/>
                             {errors.body && (
                                 <p className="mb-0 small text-danger">{errors.body[0]}</p>
                             )}
                         </InputDiv>
                         <UploadButton disabled={loading} onClick={this.handleSubmit}>
-                            {loading ? "Loading" : "Upload"}
+                            {loading ? "Loading" : "Update"}
                         </UploadButton>
                     </FormDiv>
                 </TopDiv>
@@ -124,4 +154,4 @@ class AdminDashboard extends Component {
     }
 }
 
-export default AdminDashboard;
+export default EditBlog;

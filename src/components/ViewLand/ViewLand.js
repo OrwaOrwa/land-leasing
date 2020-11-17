@@ -7,9 +7,8 @@ import {GET_REQUEST} from "../../values/globals";
 import endpoints from "../../constants/endpoints";
 import {parseErrorResponse, showAlert} from "../../helpers/helper_functions";
 import noImage from '../../assets/img/404.png';
-import AddImageModal from "./add_land_images_modal";
+import {SOLD_LAND, VIEWLAND} from "../../constants/routes";
 
-const $ = window.$;
 
 const ItemsContainer = styled.div`
   margin-top: 1.3em;
@@ -100,10 +99,13 @@ class ListedHouses extends Component {
     }
 
     getLands = () => {
+        const {location} = this.props;
+
+        const status = location.pathname === VIEWLAND ? "" : location.pathname === SOLD_LAND ? "sold" : "pending";
         this.setState({
             loading: true
         })
-        makeRequest(GET_REQUEST, `${endpoints.farmers_lands}`, {}, response => {
+        makeRequest(GET_REQUEST, `${endpoints.farmers_lands}?status=${status}`, {}, response => {
             this.setState({
                 lands: response.data
             })
@@ -120,15 +122,14 @@ class ListedHouses extends Component {
         const {loading, lands} = this.state;
         return (
             loading ?
-                <div className="text-center">
+                <div className="text-center m-5">
                     <h5>Loading....</h5>
                 </div> :
                 lands.length < 1 ?
-                    <div className="text-center">
-                        <h5>You haven't yet uploaded any lands</h5>
+                    <div className="text-center m-5">
+                        <h5>No Lands Found </h5>
                     </div> :
                     <div className="listed-land-page">
-                        <AddImageModal/>
                         <ItemsContainer>
                             <ItemsName>Land Available</ItemsName>
                             <ItemsDiv>
@@ -152,12 +153,12 @@ class ListedHouses extends Component {
                                                 >
                                                     <Button>View</Button>
                                                 </Link>
-                                                <Button onClick={e => {
+                                                {/* <Button onClick={e => {
                                                     e.preventDefault();
                                                     $('#addImageModal').modal('show');
                                                 }} className="my-2 bg-info" style={{textDecoration: "none"}}>
                                                     Add Images
-                                                </Button>
+                                                </Button>*/}
                                             </ItemDetailsDiv>
                                         </Item>
                                     </Link>

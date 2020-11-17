@@ -4,13 +4,17 @@ import "./LandDetails.css";
 // import Map from "../Map";
 import styled from "styled-components";
 import ReactModal from "react-modal";
-import {Link} from "react-router-dom";
 import {makeRequest} from "../../helpers/network_utils";
-import {GET_REQUEST} from "../../values/globals";
+import {GET_REQUEST, POST_REQUEST} from "../../values/globals";
 import endpoints from "../../constants/endpoints";
 import {parseErrorResponse, showAlert} from "../../helpers/helper_functions";
 import noImage from '../../assets/img/404.png';
 import MapContainer from "../Map";
+import AddImageModal from "../ViewLand/add_land_images_modal";
+import Swal from "sweetalert2";
+import {getUserObject} from "../../helpers/login";
+
+const $ = window.$;
 
 const MainDiv = styled.div`
   padding: 1.5em;
@@ -141,6 +145,9 @@ class LandDetails extends Component {
         land: null,
         loading: false,
         showModal: false,
+        showChatModal: false,
+        lease_agreed: false,
+        land_bought: false
     };
 
     componentDidMount() {
@@ -173,8 +180,77 @@ class LandDetails extends Component {
         this.setState({showModal: false});
     };
 
+    handleOpenChatModal = () => {
+        this.setState({showChatModal: true});
+    };
+
+    handleCloseChatModal = () => {
+        this.setState({showChatModal: false});
+    };
+
+    handleAcceptLease = () => {
+        this.setState({
+            lease_agreed: true
+        })
+        this.handleCloseModal();
+    }
+
+    handleBuyLand = () => {
+        const {lease_agreed} = this.state;
+        const {id} = this.props.match.params;
+        if (!lease_agreed) {
+            Swal.fire({
+                title: 'Error!',
+                text: `You have to agree to the lease agreement before proceeding.`,
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            }).then()
+            return;
+        }
+
+        //make stk push. (fake it till we make it).
+        Swal.fire({
+            title: 'Mpesa Confirmation.',
+            text: `You will shortly receive a prompt on your phone asking you to input your MPesa pin. Click ok after you have entered your pin,`,
+            icon: 'info',
+            confirmButtonText: 'Ok'
+        }).then(() => {
+            if (this.state.land_bought)
+                Swal.fire({
+                    title: 'Land Bought',
+                    text: `Successfully purchased land`,
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                }).then()
+            else
+                Swal.fire({
+                    title: 'Mpesa Confirmation.',
+                    text: `Could not purchase land. Please try again.`,
+                    icon: 'info',
+                    confirmButtonText: 'Ok'
+                }).then()
+        })
+
+        makeRequest(POST_REQUEST, `${endpoints.user_lands}buy`, {land_id: id}, () => {
+            this.setState({
+                land_bought: true
+            })
+        }, error => {
+            Swal.fire({
+                title: 'Error!',
+                text: `${parseErrorResponse(error)}`,
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            }).then()
+        })
+
+
+    }
+
     render() {
         const {loading, land} = this.state;
+        const {match} = this.props;
+        const user = getUserObject();
         return (
             loading ?
                 <div className="text-center">
@@ -182,6 +258,7 @@ class LandDetails extends Component {
                 </div> :
                 land ?
                     <MainDiv>
+                        <AddImageModal callback={this.getLand} match={match}/>
                         <Title>Land Description</Title>
                         <TopDiv>
                             <ImageContainer>
@@ -235,8 +312,16 @@ class LandDetails extends Component {
                                     <Value>{land.description}</Value>
                                 </Detail>
                             </LandDetail>
-
                         </TopDiv>
+                        {
+                            user.id === land.farmer.id && <Button onClick={e => {
+                                e.preventDefault();
+                                $('#addImageModal').modal('show');
+                            }} className="my-2 bg-info" style={{textDecoration: "none"}}>
+                                Add Images
+                            </Button>
+                        }
+
                         <div style={{marginBottom: "60vh"}} className="w-100">
                             <div className="col-12 position-relative">
                                 <h5>Location:</h5>
@@ -245,10 +330,22 @@ class LandDetails extends Component {
                         </div>
                         <ButtonDiv>
                             <Button onClick={this.handleOpenModal}>Lease Agreement</Button>
-                            <Button>Chat with Seller</Button>
-                            <Link to="/payments">
-                                <Button>Proceed To Payment</Button>
-                            </Link>
+                            <Button onClick={this.handleOpenChatModal}>Chat with Seller</Button>
+                            <Button onClick={this.handleBuyLand}>Proceed To Payment</Button>
+
+                            <ReactModal
+                                isOpen={this.state.showChatModal}
+                                contentLabel="Chat">
+                                <div className="d-flex flex-column h-100">
+                                    <iframe style={{width: "100%", height: "100%"}}
+                                            src="https://go-chat.netlify.app/"
+                                            title="description"/>
+                                    <Button className="bg-danger my-2" onClick={this.handleCloseChatModal}>
+                                        Cancel
+                                    </Button>
+                                </div>
+
+                            </ReactModal>
                             <ReactModal
                                 isOpen={this.state.showModal}
                                 contentLabel="Lease Agreement"
@@ -323,7 +420,7 @@ class LandDetails extends Component {
                                     the purposes of inspection with prior notification to the tenant.
                                 </p>
                                 <div className="row align-items-center justify-content-between">
-                                    <Button onClick={this.handleCloseModal}>
+                                    <Button onClick={this.handleAcceptLease}>
                                         I agree to the terms of the agreement
                                     </Button>
                                     <Button className="bg-danger" onClick={this.handleCloseModal}>
@@ -333,7 +430,9 @@ class LandDetails extends Component {
 
                             </ReactModal>
                         </ButtonDiv>
-                    </MainDiv> : <div className="text-center">
+                    </MainDiv>
+                    :
+                    <div className="text-center">
                         <h5>
                             Could not load land
                         </h5>
