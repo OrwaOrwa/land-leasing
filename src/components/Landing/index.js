@@ -57,21 +57,21 @@ class Landing extends Component {
                         <SearchInputs>
                             <Input
                                 type="text"
-                                placeholder="crop"
+                                placeholder="Crop"
                                 value={crop}
                                 name="crop"
                                 onChange={this.handleChange}
                             />
                             <Input
                                 type="text"
-                                placeholder="location"
+                                placeholder="Location"
                                 value={location}
                                 name="location"
                                 onChange={this.handleChange}
                             />
                             <Input
                                 type="text"
-                                placeholder="price"
+                                placeholder="Price"
                                 value={price}
                                 name="price"
                                 onChange={this.handleChange}

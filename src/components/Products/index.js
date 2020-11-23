@@ -11,7 +11,7 @@ const MainDiv = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  background-color: #e5e5e5;
+  background-color: #F5F5F5;
 `;
 
 const TopDiv = styled.div`
@@ -20,7 +20,7 @@ const TopDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e5e5e5;
+  background-color: #F5F5F5;
 `;
 
 const InnerDiv = styled.div`
@@ -29,9 +29,9 @@ const InnerDiv = styled.div`
 `;
 
 const Title = styled.h2`
-  font-family: Helvetica;
+  font-family: Montserrat;
   font-style: normal;
-  font-size: 1.3em;
+  font-size: 1.5em;
   font-weight: 700;
   color: #3d9a04;
   padding-left: 2em;

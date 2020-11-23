@@ -1,5 +1,5 @@
 import React from "react";
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, responsiveFontSizes} from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
     menuButton: {
         marginRight: theme.spacing(2),
+        
     },
     title: {
         flexGrow: 1,
@@ -64,6 +65,8 @@ const Navigation = () => {
                             textDecoration: "none",
                             color: "#3D9A04",
                             fontWeight: "600",
+                            fontSize:"17px",
+                            fontFamily:"Montserrat",
                         }}
                     >
                         Lease Land
@@ -76,6 +79,8 @@ const Navigation = () => {
                             textDecoration: "none",
                             color: "#3D9A04",
                             fontWeight: "600",
+                            fontSize:"17px",
+                            fontFamily:"Montserrat",
                         }}
                     >
                         Products
@@ -88,6 +93,8 @@ const Navigation = () => {
                             textDecoration: "none",
                             color: "#3D9A04",
                             fontWeight: "600",
+                            fontSize:"17px",
+                            fontFamily:"Montserrat",
                         }}
                     >
                         Agricultural Information
@@ -102,6 +109,8 @@ const Navigation = () => {
                                     textDecoration: "none",
                                     color: "#3D9A04",
                                     fontWeight: "600",
+                                    fontSize:"17px",
+                                    fontFamily:"Montserrat",
                                 }}
                             >
                                 Sign In
@@ -116,6 +125,8 @@ const Navigation = () => {
                                 textDecoration: "none",
                                 color: "#3D9A04",
                                 fontWeight: "600",
+                                fontSize:"17px",
+                                fontFamily:"Montserrat",
                             }}
                         >
                             Dashboard
@@ -128,6 +139,8 @@ const Navigation = () => {
                                 textDecoration: "none",
                                 color: "#3D9A04",
                                 fontWeight: "600",
+                                fontSize:"17px",
+                                fontFamily:"Montserrat",
                             }}
                         >
                             Sign Up

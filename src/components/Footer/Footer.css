@@ -1,7 +1,7 @@
 .main-div {
   height: auto;
   bottom: 0;
-  background-color: #dbffea;
+  background-color: #A1D780;
   margin-top: 2em;
   width: 100%;
 }
@@ -30,6 +30,13 @@
   align-items: center;
   justify-content: center;
   padding: 1em;
+}
+.link-head{
+  font-weight: 1000;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 30px;
+  margin-top: 0.6em;
+  color: white;
 }
 
 @media (max-width: 520px) {

@@ -163,9 +163,9 @@ class SignUp extends React.Component {
                         <select name="role" onChange={(e) => handleChangeData(e, this)}
                                 className="form-control my-3">
                             <option>Select Role</option>
-                            <option value="farmer">Farmer</option>
+                            <option value="farmer">Land Owner(Lessor)</option>
                             <option value="merchant">Merchant</option>
-                            <option value="user">User</option>
+                            <option value="user">Lease Land (Leasee)</option>
                         </select>
                         <Button
                             type="submit"

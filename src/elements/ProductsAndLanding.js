@@ -30,8 +30,8 @@ export const SearchDiv = styled.div`
 `;
 
 export const SearchTitle = styled.h3`
-  font-family: Helvetica;
-  font-weight: 700;
+  font-family: Montserrat;
+  font-weight: 900;
   font-style: normal;
   font-size: 2.3em;
   line-height: 41.4px;
