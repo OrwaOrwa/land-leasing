@@ -81,20 +81,20 @@ const Navigation = () => {
                         Products
                     </Link>
                 </Typography>
+                <Typography variant="h6" className={classes.links}>
+                    <Link
+                        to={ROUTES.BLOG}
+                        style={{
+                            textDecoration: "none",
+                            color: "#3D9A04",
+                            fontWeight: "600",
+                        }}
+                    >
+                        Agricultural Information
+                    </Link>
+                </Typography>
                 {
                     isUserLoggedIn() ?
-                        <Typography variant="h6" className={classes.links}>
-                            <Link
-                                to={ROUTES.BLOG}
-                                style={{
-                                    textDecoration: "none",
-                                    color: "#3D9A04",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                Agricultural Information
-                            </Link>
-                        </Typography> :
                         <Typography variant="h6" className={classes.links}>
                             <Link
                                 to={ROUTES.SIGN_IN}
@@ -106,7 +106,7 @@ const Navigation = () => {
                             >
                                 Sign In
                             </Link>
-                        </Typography>
+                        </Typography> : null
                 }
                 {isUserLoggedIn() ?
                     <Typography variant="h6" className={classes.links}>
