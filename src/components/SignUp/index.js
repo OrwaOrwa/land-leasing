@@ -11,7 +11,7 @@ import {makeRequest} from "../../helpers/network_utils";
 import {POST_REQUEST} from "../../values/globals";
 import endpoints from "../../constants/endpoints";
 import Swal from "sweetalert2";
-import {handleChangeData, showAlert} from "../../helpers/helper_functions";
+import {handleChangeData, parseErrorResponse, showAlert} from "../../helpers/helper_functions";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -66,9 +66,12 @@ class SignUp extends React.Component {
                 'success'
             ).then(() => history.push("/signin"));
         }, (error) => {
-            this.setState({
-                errors: error.response.data
-            })
+            if (error.response?.data)
+                this.setState({
+                    errors: error.response?.data
+                })
+            else
+                showAlert('error', 'Error', parseErrorResponse(error))
         }, () => {
             this.setState({loading: false})
         })
