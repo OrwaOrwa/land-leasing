@@ -47,9 +47,7 @@ class SignUp extends React.Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        this.setState({
-            loading: true
-        })
+
         const {data} = this.state;
         const {history} = this.props;
 
@@ -57,6 +55,9 @@ class SignUp extends React.Component {
             showAlert('error', 'Role', 'Please select user type');
             return;
         }
+        this.setState({
+            loading: true
+        })
         const url = data.role === "user" ? endpoints.users_register : data.role === "merchant" ? endpoints.merchants_register
             : endpoints.farmers_register;
         makeRequest(POST_REQUEST, `${url}`, data, () => {

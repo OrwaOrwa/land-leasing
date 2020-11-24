@@ -101,7 +101,7 @@ const Navigation = () => {
                     </Link>
                 </Typography>
                 {
-                    isUserLoggedIn() ?
+                    !isUserLoggedIn() ?
                         <Typography variant="h6" className={classes.links}>
                             <Link
                                 to={ROUTES.SIGN_IN}
