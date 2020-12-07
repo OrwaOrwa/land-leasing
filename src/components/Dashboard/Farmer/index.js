@@ -107,14 +107,18 @@ class FarmerDashboard extends Component {
                             {user.name}
                         </Name>
                         <ActionDiv>
-                            <Links>Add Land</Links>
+                            <Links>Edit Land</Links>
                             <Link to={`${ROUTES.VIEWLAND}`}>
                                 <Links>All Land</Links>
                             </Link>
                             <Link to={`${ROUTES.SOLD_LAND}`}>
                                 <Links>Sold Land</Links>
                             </Link>
-                            <Button onClick={this.handleOpenChatModal}>Chats</Button>
+                            <Button 
+                                variant="contained"
+                                style={{backgroundColor: "white", color: "#3D9A04", fontWeight:"500"}}
+                                onClick={this.handleOpenChatModal}>
+                                Chats</Button>
                             <ReactModal
                                 isOpen={this.state.showChatModal}
                                 contentLabel="Chat">
@@ -136,6 +140,7 @@ class FarmerDashboard extends Component {
                             <Input
                                 type="text"
                                 value={data.name}
+                                placeholder="E.g Kamakis 40*100"
                                 name="name"
                                 onChange={e => handleChangeData(e, this)}
                             />
@@ -182,10 +187,11 @@ class FarmerDashboard extends Component {
                             </div>
                         </InputDiv>
                         <InputDiv>
-                            <Label>Suitable crop(s)</Label>
+                            <Label>Suitable crop(s) to grow</Label>
                             <Input
                                 type="text"
                                 value={data.crops}
+                                placeholder="Maize,Beans"
                                 name="crops"
                                 onChange={e => handleChangeData(e, this)}
                             />
@@ -198,6 +204,7 @@ class FarmerDashboard extends Component {
                             <Input
                                 type="text"
                                 value={data.size}
+                                placeholder="40*100"
                                 name="size"
                                 onChange={e => handleChangeData(e, this)}
                             />
@@ -210,6 +217,7 @@ class FarmerDashboard extends Component {
                             <Input
                                 type="number"
                                 value={data.price}
+                                placeholder="/Year"
                                 name="price"
                                 onChange={e => handleChangeData(e, this)}
                             />
@@ -222,6 +230,7 @@ class FarmerDashboard extends Component {
                             <Input
                                 type="text"
                                 value={data.lease_period}
+                                placeholder="2 years"
                                 name="lease_period"
                                 onChange={e => handleChangeData(e, this)}
                             />
@@ -234,6 +243,7 @@ class FarmerDashboard extends Component {
                             <DescInput
                                 type="text"
                                 value={data.description}
+                                placeholder="Description about the Land (Max 250 words)"
                                 name="description"
                                 onChange={e => handleChangeData(e, this)}
                             />

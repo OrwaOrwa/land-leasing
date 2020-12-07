@@ -26,7 +26,7 @@ const MainBlogDiv = styled.div`
 `;
 
 const Title = styled.div`
-    font-family: Helvetica;
+    font-family: Montserrat;
     font-style: normal;
     font-size: 1.8em;
     font-weight; 600;

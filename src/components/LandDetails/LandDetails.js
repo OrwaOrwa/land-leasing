@@ -26,10 +26,11 @@ const MainDiv = styled.div`
 `;
 
 const Title = styled.h2`
-  font-family: Helvetica;
+  font-family: Montserrat;
   font-style: normal;
-  font-size: 1.3em;
+  font-size: 1.5em;
   font-weight: 700;
+  padding:30px;
   color: #3d9a04;
 `;
 
@@ -82,17 +83,19 @@ const Detail = styled.div`
 `;
 
 const Option = styled.h3`
-  font-family: Helvetica;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.1em;
+  font-family: Montserrat;
+  color:#3D9A04;
+  font-weight: 500;
+  margin-right: 20px;
+  font-size: 1.2em;
 `;
 
 const Value = styled.h3`
-  font-family: Helvetica;
+  font-family: montserrat;
   font-style; normal;
-  font-weight: 600;
-  font-size: 1.2em;
+  font-weight:500;
+  font-size: 1em;
+  padding: 1em;
 `;
 /*
 
@@ -269,7 +272,7 @@ class LandDetails extends Component {
                                         <div className="carousel-inner">
                                             {
                                                 land.image.length < 1 ?
-                                                    <img style={{objectFit: "contain", height: "30vh"}}
+                                                    <img style={{objectFit: "contain", height: "40vh"}}
                                                          className="imi d-inline-block mb-3 mb-lg-0 img-fluid"
                                                          src={noImage} alt="car"/> :
                                                     land.image.map((image, index) =>
@@ -277,7 +280,7 @@ class LandDetails extends Component {
                                                              className={`carousel-item ${index === 0 && "active"}`}>
                                                             <img style={{
                                                                 objectFit: "cover",
-                                                                height: "30vh",
+                                                                height: "40vh",
                                                                 width: "100%"
                                                             }}
                                                                  className="imi d-inline-block mb-3 mb-lg-0 img-fluid"
@@ -300,15 +303,15 @@ class LandDetails extends Component {
                             </ImageContainer>
                             <LandDetail>
                                 <Detail>
-                                    <Option>Size : </Option>
+                                    <Option>Size: </Option>
                                     <Value>{land.size}</Value>
                                 </Detail>
                                 <Detail>
-                                    <Option>Price : </Option>
+                                    <Option>Price: </Option>
                                     <Value>{land.price}</Value>
                                 </Detail>
                                 <Detail>
-                                    <Option>Brief Description : </Option>
+                                    <Option>Brief Description: </Option>
                                     <Value>{land.description}</Value>
                                 </Detail>
                             </LandDetail>
@@ -324,7 +327,7 @@ class LandDetails extends Component {
 
                         <div style={{marginBottom: "60vh"}} className="w-100">
                             <div className="col-12 position-relative">
-                                <h5>Location:</h5>
+                               <Title>Location:</Title>
                                 <MapContainer initialCenter={{lat: land.lat, lng: land.lon}}/>
                             </div>
                         </div>
@@ -349,10 +352,10 @@ class LandDetails extends Component {
                             <ReactModal
                                 isOpen={this.state.showModal}
                                 contentLabel="Lease Agreement"
-                            >
+                            ><h2>Lease Agreement</h2>
                                 <p>
-                                    This agreement is between {land.farmer.name} (
-                                    landowner) and _________________, (tenant), for the lease of
+                                    This agreement is from <b>{land.farmer.name}</b>(
+                                    landowner) to You, for the lease of
                                     certain parcels of land for the purpose of Agricultural practice
                                     (Farming )
                                 </p>
@@ -361,14 +364,14 @@ class LandDetails extends Component {
                                     follows: location, Size.
                                 </p>
                                 <p>
-                                    2. The term of this lease shall be Expire from
-                                    {land.lease_period} {" "}
-                                    except as terminated earlier according to the provisions below.{" "}
+                                    2. The term of this lease shall be Expire in 
+                                     <b> {land.lease_period}</b> Years {" "}
+                                    except as terminated earlier according to a consensus Agreement.{" "}
                                 </p>
 
                                 <p>
-                                    3. The tenant agrees to pay a lease fee to the landowner of Ksh.
-                                    {land.price} per {land.size}.
+                                    3. The tenant agrees to pay a lease fee to the landowner of<b> Ksh. 
+                                    {land.price}</b> per <b>{land.size}</b>.
                                     The tenant agrees to pay such sum at the beginning of the lease
                                     term and on the anniversary thereof unless otherwise mutually
                                     agreed. This lease fee may be renegotiated annually.
@@ -379,7 +382,7 @@ class LandDetails extends Component {
                                     associated with the above purposes, including but not limited to:
                                     The tenant agrees to employ standard best management practices. It
                                     shall not be considered a default of this Lease if weather or
-                                    other circumstance prevents timely practices or harvesting.{" "}
+                                    other circumstance prevents timely practices or harvesting.<b>{" "}</b>
                                 </p>
 
                                 <p>
@@ -394,8 +397,8 @@ class LandDetails extends Component {
                                     to proper disposal of trash and waste. The tenant further agrees:{" "}
                                 </p>
                                 <p>
-                                    7. The [landowner/tenant] agrees to pay all taxes and assessments
-                                    associated with this parcel.{" "}
+                                    7. The land owner <b>{land.farmer.name}</b> agrees to pay all taxes and assessments
+                                    associated with this parcel, that accrued before leasing it out.{" "}
                                 </p>
                                 <p>
                                     8. The farmer agrees to provide the landowner with evidence of

@@ -59,7 +59,7 @@
 }
 
 .land__description {
-  font-size: 1.2em;
+  font-size: 1em;
   font-weight: 200;
 }
 
@@ -213,7 +213,7 @@
 
   .chat__div {
     margin-top: 1em;
-    width: 100%;
+    width: 80%;
     display: flex;
     align-items: center;
     justify-content: space-between;

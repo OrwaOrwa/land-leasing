@@ -82,7 +82,7 @@ axios.interceptors.response.use((response) => {
             }*/
             //Redirect only if error was 401 unauthorised.
             if (error.response.status === 401 && window.location.pathname !== "/signin") {
-                logout();
+                //logout();
                 return Promise.reject(error);
             }
         }

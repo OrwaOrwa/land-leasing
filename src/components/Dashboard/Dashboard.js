@@ -20,12 +20,13 @@ export const MainDiv = styled.div`
 `;
 
 export const Title = styled.h3`
-  font-family: Helvetica;
+  font-family: Montserrat;
   font-style: normal;
   font-weight: bold;
-  font-size: 1.5em;
+  font-size: 1.7em;
   line-height: 34px;
   color: #3d9a04;
+  padding:20px;
 `;
 
 export const TopDiv = styled.div`
@@ -37,7 +38,7 @@ export const TopDiv = styled.div`
 `;
 
 export const ProfileDiv = styled.div`
-  height: 40vh;
+  height: 60vh;
   width: 30%;
   display: flex;
   flex-flow: column;
@@ -49,10 +50,11 @@ export const ProfileDiv = styled.div`
 `;
 
 export const Name = styled.p`
-  font-family: Helvetica;
+  font-family: Montserrat;
   font-style: normal;
-  font-size: 1.2em;
-  font-weight: 300;
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-top :30px;
 `;
 
 export const ActionDiv = styled.div`
@@ -70,7 +72,8 @@ export const ActionDiv = styled.div`
 export const Links = styled.p`
   text-decoration: none;
   color: black;
-  font-family: Helvetica;
+  font-family: Montserrat;
+  variant:contained;
   font-style: normal;
   font-size: 1.2em;
   margin-top: 0.1em;
