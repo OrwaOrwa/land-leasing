@@ -19,13 +19,14 @@ import {
 } from "../Dashboard";
 import {getUserObject} from "../../../helpers/login";
 import {makeRequest} from "../../../helpers/network_utils";
-import {GET_REQUEST, POST_REQUEST} from "../../../values/globals";
+import {GET_REQUEST, PATCH_REQUEST, POST_REQUEST} from "../../../values/globals";
 import endpoints from "../../../constants/endpoints";
 import Swal from "sweetalert2";
 import {handleChangeData} from "../../../helpers/helper_functions";
 import debounce from "@material-ui/core/utils/debounce";
 import ReactModal from "react-modal";
 import Button from "@material-ui/core/Button";
+
 
 class FarmerDashboard extends Component {
 
@@ -38,17 +39,40 @@ class FarmerDashboard extends Component {
         search_results: []
     }
 
+    componentDidMount(){
+        this.getLandDetails();
+    }
+
+    getLandDetails = ()=>{
+        const id = this?.props?.match?.params?.id;
+        if(id)
+        makeRequest(GET_REQUEST,`${endpoints.lands}${id}`,{},response=>{
+            const data = {...response.data};
+            if(data){
+                console.log(data);
+                this.setState({
+                    data: data
+                })
+            }
+        });
+    }
+
     handleSubmit = () => {
         this.setState({
             loading: true
         })
         const {data} = this.state;
-        makeRequest(POST_REQUEST, `${endpoints.farmers_lands}`, data, () => {
+        const {id} = this?.props?.match?.params || {};
+        const {history} = this.props;
+        const path = id ? PATCH_REQUEST : POST_REQUEST;
+        makeRequest(POST_REQUEST, `${endpoints.farmers_lands}`, data, response => {
             Swal.fire(
                 'Success!',
-                'Land added successfully!',
+                `Land ${id ? "updated":"added"} successfully!`,
                 'success'
-            ).then();
+            ).then(()=>{
+                history.push(`lands/${response.data.id}`);
+            });
         }, (error) => {
             this.setState({
                 errors: error.response.data
@@ -107,7 +131,9 @@ class FarmerDashboard extends Component {
                             {user.name}
                         </Name>
                         <ActionDiv>
-                            <Links>Edit Land</Links>
+                            <Link to={`${ROUTES.DASHBOARD}`}>
+                                <Links>Add Land</Links>
+                            </Link>
                             <Link to={`${ROUTES.VIEWLAND}`}>
                                 <Links>All Land</Links>
                             </Link>
@@ -139,7 +165,7 @@ class FarmerDashboard extends Component {
                             <Label>Land Name</Label>
                             <Input
                                 type="text"
-                                value={data.name}
+                                value={data.name || ""}
                                 placeholder="E.g Kamakis 40*100"
                                 name="name"
                                 onChange={e => handleChangeData(e, this)}
@@ -190,7 +216,7 @@ class FarmerDashboard extends Component {
                             <Label>Suitable crop(s) to grow</Label>
                             <Input
                                 type="text"
-                                value={data.crops}
+                                value={data.crops || ""}
                                 placeholder="Maize,Beans"
                                 name="crops"
                                 onChange={e => handleChangeData(e, this)}
@@ -203,7 +229,7 @@ class FarmerDashboard extends Component {
                             <Label>Size</Label>
                             <Input
                                 type="text"
-                                value={data.size}
+                                value={data.size || ""}
                                 placeholder="40*100"
                                 name="size"
                                 onChange={e => handleChangeData(e, this)}
@@ -216,7 +242,7 @@ class FarmerDashboard extends Component {
                             <Label>Price</Label>
                             <Input
                                 type="number"
-                                value={data.price}
+                                value={data.price || ""}
                                 placeholder="/Year"
                                 name="price"
                                 onChange={e => handleChangeData(e, this)}
@@ -229,7 +255,7 @@ class FarmerDashboard extends Component {
                             <Label>Lease Period</Label>
                             <Input
                                 type="text"
-                                value={data.lease_period}
+                                value={data.lease_period || ""}
                                 placeholder="2 years"
                                 name="lease_period"
                                 onChange={e => handleChangeData(e, this)}
@@ -242,7 +268,7 @@ class FarmerDashboard extends Component {
                             <Label>Brief Description</Label>
                             <DescInput
                                 type="text"
-                                value={data.description}
+                                value={data.description || ""}
                                 placeholder="Description about the Land (Max 250 words)"
                                 name="description"
                                 onChange={e => handleChangeData(e, this)}

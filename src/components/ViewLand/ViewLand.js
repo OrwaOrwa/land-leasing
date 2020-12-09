@@ -135,7 +135,7 @@ class ListedHouses extends Component {
                             <ItemsDiv>
                                 {lands.map((land) => (
                                     <Link
-                                        to={`edit-land/${land.id}`}
+                                        to={`/lands/${land.id}`}
                                         style={{textDecoration: "none", color: "black"}}
                                         key={land.id}
                                     >

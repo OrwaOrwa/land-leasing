@@ -161,16 +161,16 @@ class Dashboard extends Component {
         return (
             <>
                 {renderIf(user.role === Roles.farmer)(
-                    <FarmerDashboard/>
+                    <FarmerDashboard match={this.props.match} history={this.props.history}/>
                 )}
                 {renderIf(user.role === Roles.merchant)(
-                    <MerchantDashboard/>
+                    <MerchantDashboard match={this.props.match}/>
                 )}
                 {renderIf(user.role === Roles.user)(
-                    <UserDashboard/>
+                    <UserDashboard match={this.props.match}/>
                 )}
                 {renderIf(user.role === Roles.admin)(
-                    <AdminDashboard/>
+                    <AdminDashboard match={this.props.match}/>
                 )}
             </>
         );

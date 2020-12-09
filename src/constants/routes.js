@@ -16,5 +16,6 @@ export const BLOG_EDIT = "/blog/edit/:id";
 export const VIEWLAND = `/lands-all`;
 export const SOLD_LAND = `/lands-sold`;
 export const VIEW_PENDING_LAND = `/lands-pending`;
-export const EDITLAND = `/edit-land/:id`;
+export const EDITLAND = `/dashboard/:id`;
 export const ADMIN = "/admin";
+export const TEST = "/test/:id";

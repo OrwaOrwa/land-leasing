@@ -13,6 +13,8 @@ import MapContainer from "../Map";
 import AddImageModal from "../ViewLand/add_land_images_modal";
 import Swal from "sweetalert2";
 import {getUserObject} from "../../helpers/login";
+import {Link} from 'react-router-dom';
+import {numberWithCommas} from '../../helpers/helper_functions';
 
 const $ = window.$;
 
@@ -211,42 +213,45 @@ class LandDetails extends Component {
             return;
         }
 
-        //make stk push. (fake it till we make it).
-        Swal.fire({
-            title: 'Mpesa Confirmation.',
-            text: `You will shortly receive a prompt on your phone asking you to input your MPesa pin. Click ok after you have entered your pin,`,
-            icon: 'info',
-            confirmButtonText: 'Ok'
-        }).then(() => {
-            if (this.state.land_bought)
+        
+        makeRequest(POST_REQUEST, `${endpoints.user_lands}buy`, {land_id: id}, response => {
+            const res = response.data;
+            const {history} = this.props;
+            const {land} = this.state;
+            Swal.fire({
+                title: `Mpesa Payment Confirmation for KES ${numberWithCommas(land.price || "-")}`,
+                text: `Please check your mobile phone for a prompt and click "Confirm" after submitting.`,
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then(result => {
+                if (result.isDismissed) return;
                 Swal.fire({
-                    title: 'Land Bought',
-                    text: `Successfully purchased land`,
-                    icon: 'success',
-                    confirmButtonText: 'Ok'
-                }).then()
-            else
-                Swal.fire({
-                    title: 'Mpesa Confirmation.',
-                    text: `Could not purchase land. Please try again.`,
-                    icon: 'info',
-                    confirmButtonText: 'Ok'
-                }).then()
-        })
-
-        makeRequest(POST_REQUEST, `${endpoints.user_lands}buy`, {land_id: id}, () => {
-            this.setState({
-                land_bought: true
+                    didOpen: () => {
+                        Swal.showLoading()
+                    },
+                    title: 'Validating transaction',
+                    text: 'Validating Transaction',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then();
+                makeRequest(POST_REQUEST, endpoints.validate_mpesa, {
+                    request_id: res.CheckoutRequestID,
+                    land_id: id
+                }, () => {
+                    showAlert('success', 'Success!', 'Your transaction completed successfully');
+                }, error => {
+                    showAlert('error', 'Error!', parseErrorResponse(error));
+                }, () => {
+                    Swal.hideLoading();
+                })
             })
         }, error => {
-            Swal.fire({
-                title: 'Error!',
-                text: `${parseErrorResponse(error)}`,
-                icon: 'error',
-                confirmButtonText: 'Ok'
-            }).then()
+            showAlert('error', 'Error', parseErrorResponse(error))
+        }, () => {
+            this.setState({loadingCheckout: false})
         })
-
 
     }
 
@@ -262,7 +267,12 @@ class LandDetails extends Component {
                 land ?
                     <MainDiv>
                         <AddImageModal callback={this.getLand} match={match}/>
-                        <Title>Land Description</Title>
+                        <Title>Land Description  {
+                            user.id === land.farmer.id && <Link to={`/dashboard/${land.id}`} className="btn btn-info my-2 bg-info" style={{textDecoration: "none"}}>
+                                Edit
+                            </Link>
+                        }
+                        </Title>
                         <TopDiv>
                             <ImageContainer>
                                 <ImageDiv>
@@ -325,6 +335,7 @@ class LandDetails extends Component {
                             </Button>
                         }
 
+
                         <div style={{marginBottom: "60vh"}} className="w-100">
                             <div className="col-12 position-relative">
                                <Title>Location:</Title>
@@ -332,10 +343,13 @@ class LandDetails extends Component {
                             </div>
                         </div>
                         <ButtonDiv>
+                          
                             <Button onClick={this.handleOpenModal}>Lease Agreement</Button>
-                            <Button onClick={this.handleOpenChatModal}>Chat with Seller</Button>
-                            <Button onClick={this.handleBuyLand}>Proceed To Payment</Button>
-
+                            {user.role === "user" &&  <Button onClick={()=>{
+                                window.open(`https://api.whatsapp.com/send?phone=${land.farmer.phone_number}`)
+                            }}>Chat with Seller</Button>} 
+                            {user.role === "user" && <Button onClick={this.handleBuyLand}>Proceed To Payment</Button>}
+                        
                             <ReactModal
                                 isOpen={this.state.showChatModal}
                                 contentLabel="Chat">
@@ -355,7 +369,7 @@ class LandDetails extends Component {
                             ><h2>Lease Agreement</h2>
                                 <p>
                                     This agreement is from <b>{land.farmer.name}</b>(
-                                    landowner) to You, for the lease of
+                                    landowner) to <b> {user.name} </b>, for the lease of
                                     certain parcels of land for the purpose of Agricultural practice
                                     (Farming )
                                 </p>

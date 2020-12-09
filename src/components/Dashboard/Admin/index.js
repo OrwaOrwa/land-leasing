@@ -19,11 +19,17 @@ import {makeRequest} from "../../../helpers/network_utils";
 import {POST_REQUEST} from "../../../values/globals";
 import endpoints from "../../../constants/endpoints";
 import Swal from "sweetalert2";
+import Transactions from './transactions';
 
+const pages = {
+    blog: "blog",
+    transactions:"transactions"
+}
 class AdminDashboard extends Component {
 
     state = {
         data: {},
+        current_page: pages.blog,
         loading: false,
         errors: {},
     }
@@ -78,7 +84,7 @@ class AdminDashboard extends Component {
 
     render() {
         const user = getUserObject();
-        const {loading, data, errors} = this.state;
+        const {loading, data, errors,current_page} = this.state;
         return (
             <MainDiv>
                 <Title>Dashboard</Title>
@@ -89,12 +95,23 @@ class AdminDashboard extends Component {
                             {user.lastName}
                         </Name>
                         <ActionDiv>
-                            <Links>Add Blog</Links>
+                            <Links onClick={e=>{
+                                e.preventDefault();
+                               window.location.reload();
+                            }}>Add Blog</Links>
                             {/*  <Links>Edit Product/Service</Links>*/}
+                           <Links onClick={e=>{
+                               e.preventDefault();
+                                this.setState({
+                                    current_page: pages.transactions
+                                })
+                            }}>Transactions</Links>
                         </ActionDiv>
                         <SignOut/>
                     </ProfileDiv>
-                    <FormDiv>
+                    {
+                        current_page === pages.blog && 
+                        <FormDiv>
                         <InputDiv>
                             <Label>Blog Title</Label>
                             <Input
@@ -118,6 +135,11 @@ class AdminDashboard extends Component {
                             {loading ? "Loading" : "Upload"}
                         </UploadButton>
                     </FormDiv>
+                    }
+                    {
+                        current_page === pages.transactions && <Transactions/>
+                    }
+                  
                 </TopDiv>
             </MainDiv>
         );
