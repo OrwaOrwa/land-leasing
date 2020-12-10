@@ -46,7 +46,7 @@ export default class Transactions extends Component {
       <th scope="col">#</th>
       <th scope="col">Land Name</th>
       <th scope="col">Price</th>
-      <th scope="col">Lease Period</th>
+      <th scope="col">Phone Number</th>
       <th scope="col">Farmer</th>
     </tr>
   </thead>

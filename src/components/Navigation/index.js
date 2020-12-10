@@ -83,7 +83,7 @@ const Navigation = () => {
                             fontFamily:"Montserrat",
                         }}
                     >
-                        Products
+                        Products/Services
                     </Link>
                 </Typography>
                 <Typography variant="h6" className={classes.links}>

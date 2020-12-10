@@ -140,7 +140,7 @@ class FarmerDashboard extends Component {
                             <Link to={`${ROUTES.SOLD_LAND}`}>
                                 <Links>Sold Land</Links>
                             </Link>
-                            <Button 
+                        {/*     <Button 
                                 variant="contained"
                                 style={{backgroundColor: "white", color: "#3D9A04", fontWeight:"500"}}
                                 onClick={this.handleOpenChatModal}>
@@ -156,7 +156,7 @@ class FarmerDashboard extends Component {
                                         Cancel
                                     </Button>
                                 </div>
-                            </ReactModal>
+                            </ReactModal> */}
                         </ActionDiv>
                         <SignOut/>
                     </ProfileDiv>

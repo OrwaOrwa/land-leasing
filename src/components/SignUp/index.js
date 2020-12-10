@@ -108,8 +108,8 @@ class SignUp extends React.Component {
                             margin="normal"
                             required
                             fullWidth
-                            id="email"
-                            label="Phone Number"
+                            id="phone_number"
+                            label="Phone Number(Your MPESA No:)"
                             name="phone_number"
                             autoFocus
                             value={data?.phone_number}
