@@ -1,12 +1,12 @@
-import React, {Component} from 'react'
-import endpoints from '../../../constants/endpoints';
-import {numberWithCommas, parseErrorResponse, showAlert} from '../../../helpers/helper_functions';
-import {makeRequest} from '../../../helpers/network_utils';
-import {GET_REQUEST} from '../../../values/globals';
+import React, {Component} from 'react';
+import {makeRequest} from "../../../helpers/network_utils";
+import {GET_REQUEST} from "../../../values/globals";
+import endpoints from "../../../constants/endpoints";
+import {numberWithCommas, parseErrorResponse, showAlert} from "../../../helpers/helper_functions";
 import {FormDiv} from "../Dashboard";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-export default class Transactions extends Component {
+class Lands extends Component {
 
     state = {
         lands: [],
@@ -78,3 +78,5 @@ export default class Transactions extends Component {
         )
     }
 }
+
+export default Lands;

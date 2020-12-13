@@ -13,7 +13,11 @@ export default {
     reset_password: "users/reset/",
     login: "login",
     farmers_lands: "farmers/lands/",
+    farmers_lands_deactivate: "farmers/lands/deactivate/",
     farmers_lands_images: id => `farmers/lands/image/${id}`,
     validate_mpesa: "users/mpesa/validate/",
-    admin_lands:"admin/lands"
+    admin_lands_bought: "admin/lands/bought/",
+    admin_lands: "admin/lands/",
+    admin_products: "admin/products/",
+    admin_users: "admin/users/"
 }

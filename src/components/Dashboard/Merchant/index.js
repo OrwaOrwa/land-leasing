@@ -21,6 +21,12 @@ import {POST_REQUEST} from "../../../values/globals";
 import endpoints from "../../../constants/endpoints";
 import Swal from "sweetalert2";
 import {handleChangeData} from "../../../helpers/helper_functions";
+import Products from "./product";
+
+const pages = {
+    index: "index",
+    products: "products"
+}
 
 class MerchantDashboard extends Component {
 
@@ -28,6 +34,7 @@ class MerchantDashboard extends Component {
         data: {},
         loading: false,
         errors: {},
+        current_page: pages.index
     }
 
     handleSubmit = () => {
@@ -60,7 +67,7 @@ class MerchantDashboard extends Component {
 
     render() {
         const user = getUserObject();
-        const {loading, data, errors} = this.state;
+        const {loading, data, errors, current_page} = this.state;
         return (
             <MainDiv>
                 <Title>Dashboard</Title>
@@ -71,81 +78,96 @@ class MerchantDashboard extends Component {
                             {user.lastName}
                         </Name>
                         <ActionDiv>
-                            <Links>Add Product/Service</Links>
-                          {/*  <Links>Edit Product/Service</Links>*/}
+                            <Links onClick={() => this.setState({
+                                current_page: pages.index
+                            })}>Add Product/Service</Links>
+                            <Links onClick={() => this.setState({
+                                current_page: pages.products
+                            })}>Products</Links>
+                            {/*  <Links>Edit Product/Service</Links>*/}
                         </ActionDiv>
                         <SignOut/>
                     </ProfileDiv>
-                    <FormDiv>
-                        <InputDiv>
-                            <Label>Product/Service</Label>
-                            <Input
-                                type="text"
-                                value={data?.name}
-                                name="name"
-                                onChange={e => handleChangeData(e, this)}
-                            />
-                            {errors.name && (
-                                <p className="mb-0 small text-danger">{errors.name[0]}</p>
-                            )}
-                        </InputDiv>
-                        <InputDiv>
-                            <Label>Name of Organization</Label>
-                            <Input
-                                type="text"
-                                value={data?.organization_name}
-                                name="organization_name"
-                                onChange={e => handleChangeData(e, this)}
-                            />
-                            {errors.organization_name && (
-                                <p className="mb-0 small text-danger">{errors.organization_name[0]}</p>
-                            )}
-                        </InputDiv>
-                        <InputDiv>
-                            <Label>Price</Label>
-                            <Input
-                                type="number"
-                                value={data?.price}
-                                name="price"
-                                onChange={e => handleChangeData(e, this)}
-                            />
-                            {errors.price && (
-                                <p className="mb-0 small text-danger">{errors.price[0]}</p>
-                            )}
-                        </InputDiv>
-                        <InputDiv>
-                            <Label>Brief Description</Label>
-                            <DescInput
-                                type="text"
-                                value={data?.description}
-                                name="description"
-                                onChange={e => handleChangeData(e, this)}
-                            />
-                            {errors.description && (
-                                <p className="mb-0 small text-danger">{errors.description[0]}</p>
-                            )}
-                        </InputDiv>
-                        <InputDiv>
-                            <Label>Upload Product Image</Label>
-                            <Input
-                                name="image"
-                                accept="image/*"
-                                onChange={event => this.setState({
-                                    data: {
-                                        ...data,
-                                        image: event.target.files[0]
-                                    }
-                                })}
-                                type="file"
-                            />
-                            {errors.image && (
-                                <p className="mb-0 small text-danger">{errors.image[0]}</p>
-                            )}
-                        </InputDiv>
-                        <UploadButton disabled={loading} onClick={this.handleSubmit}>
-                            {loading ? "Loading" : "Upload"}
-                        </UploadButton>
-                    </FormDiv>
+                    {
+                        current_page === pages.index &&
+                        <FormDiv>
+
+                            <InputDiv>
+                                <Label>Product/Service</Label>
+                                <Input
+                                    type="text"
+                                    value={data?.name}
+                                    name="name"
+                                    onChange={e => handleChangeData(e, this)}
+                                />
+                                {errors.name && (
+                                    <p className="mb-0 small text-danger">{errors.name[0]}</p>
+                                )}
+                            </InputDiv>
+                            <InputDiv>
+                                <Label>Name of Organization</Label>
+                                <Input
+                                    type="text"
+                                    value={data?.organization_name}
+                                    name="organization_name"
+                                    onChange={e => handleChangeData(e, this)}
+                                />
+                                {errors.organization_name && (
+                                    <p className="mb-0 small text-danger">{errors.organization_name[0]}</p>
+                                )}
+                            </InputDiv>
+                            <InputDiv>
+                                <Label>Price</Label>
+                                <Input
+                                    type="number"
+                                    value={data?.price}
+                                    name="price"
+                                    onChange={e => handleChangeData(e, this)}
+                                />
+                                {errors.price && (
+                                    <p className="mb-0 small text-danger">{errors.price[0]}</p>
+                                )}
+                            </InputDiv>
+                            <InputDiv>
+                                <Label>Brief Description</Label>
+                                <DescInput
+                                    type="text"
+                                    value={data?.description}
+                                    name="description"
+                                    onChange={e => handleChangeData(e, this)}
+                                />
+                                {errors.description && (
+                                    <p className="mb-0 small text-danger">{errors.description[0]}</p>
+                                )}
+                            </InputDiv>
+                            <InputDiv>
+                                <Label>Upload Product Image</Label>
+                                <Input
+                                    name="image"
+                                    accept="image/*"
+                                    onChange={event => this.setState({
+                                        data: {
+                                            ...data,
+                                            image: event.target.files[0]
+                                        }
+                                    })}
+                                    type="file"
+                                />
+                                {errors.image && (
+                                    <p className="mb-0 small text-danger">{errors.image[0]}</p>
+                                )}
+                            </InputDiv>
+                            <UploadButton disabled={loading} onClick={this.handleSubmit}>
+                                {loading ? "Loading" : "Upload"}
+                            </UploadButton>
+                        </FormDiv>
+                    }
+                    {
+                        current_page === pages.products &&
+                        <FormDiv>
+                            <Products/>
+                        </FormDiv>
+                    }
                 </TopDiv>
             </MainDiv>
         );

@@ -7,7 +7,7 @@ import ReactModal from "react-modal";
 import {makeRequest} from "../../helpers/network_utils";
 import {GET_REQUEST, POST_REQUEST} from "../../values/globals";
 import endpoints from "../../constants/endpoints";
-import {parseErrorResponse, showAlert} from "../../helpers/helper_functions";
+import {parseErrorResponse, showAlert, toTitleCase} from "../../helpers/helper_functions";
 import noImage from '../../assets/img/404.png';
 import MapContainer from "../Map";
 import AddImageModal from "../ViewLand/add_land_images_modal";
@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import {getUserObject} from "../../helpers/login";
 import {Link} from 'react-router-dom';
 import {numberWithCommas} from '../../helpers/helper_functions';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const $ = window.$;
 
@@ -213,7 +214,9 @@ class LandDetails extends Component {
             return;
         }
 
-        
+        this.setState({
+            loadingCheckout: true
+        })
         makeRequest(POST_REQUEST, `${endpoints.user_lands}buy`, {land_id: id}, response => {
             const res = response.data;
             const {history} = this.props;
@@ -255,22 +258,54 @@ class LandDetails extends Component {
 
     }
 
+    deactivateLand = e => {
+        const {id} = this.props.match.params;
+        this.setState({
+            loadingDeactivate: true
+        });
+
+        makeRequest(POST_REQUEST, `${endpoints.farmers_lands_deactivate}${id}`, {}, () => {
+            showAlert('success', 'Success!', 'Land Updated successfully!');
+            this.getLand();
+        }, error => {
+            showAlert('error', 'Error', parseErrorResponse(error))
+        }, () => {
+            this.setState({loadingDeactivate: false})
+        })
+    }
+
     render() {
-        const {loading, land} = this.state;
+        const {loading, land, loadingCheckout, loadingDeactivate} = this.state;
         const {match} = this.props;
         const user = getUserObject();
         return (
             loading ?
-                <div className="text-center">
-                    Loading....
+                <div className="text-center my-5 py-5">
+                    <CircularProgress/>
                 </div> :
                 land ?
                     <MainDiv>
                         <AddImageModal callback={this.getLand} match={match}/>
-                        <Title>Land Description  {
-                            user.id === land.farmer.id && <Link to={`/dashboard/${land.id}`} className="btn btn-info my-2 bg-info" style={{textDecoration: "none"}}>
-                                Edit
-                            </Link>
+                        <div className="clearfix">
+                            <h3 className="text-success">Land Description</h3>
+                            <span
+                                className="badge-info px-2 rounded-pill mr-3 bg-success d-flex align-items-center justify-content-center">
+                                {toTitleCase(land.status || "-")}
+                            </span></div>
+                        <Title>{
+                            user.id === land.farmer.id &&
+                            <div className="d-flex">
+                                <Link to={`/dashboard/${land.id}`} className="btn btn-info my-2 bg-info"
+                                      style={{textDecoration: "none"}}>
+                                    Edit
+                                </Link>
+                                <button disabled={loadingDeactivate} onClick={this.deactivateLand}
+                                        className="btn btn-info my-2 bg-info ml-2"
+                                        style={{textDecoration: "none"}}>
+                                    {loadingDeactivate ? "Loading" : land.active === 1 ? "De - Activate" : "Activate"}
+                                </button>
+                            </div>
+
                         }
                         </Title>
                         <TopDiv>
@@ -338,18 +373,20 @@ class LandDetails extends Component {
 
                         <div style={{marginBottom: "60vh"}} className="w-100">
                             <div className="col-12 position-relative">
-                               <Title>Location:</Title>
+                                <Title>Location:</Title>
                                 <MapContainer initialCenter={{lat: land.lat, lng: land.lon}}/>
                             </div>
                         </div>
                         <ButtonDiv>
-                          
+
                             <Button onClick={this.handleOpenModal}>Lease Agreement</Button>
-                            {user.role === "user" &&  <Button onClick={()=>{
+                            {user.role === "user" && <Button onClick={() => {
                                 window.open(`https://api.whatsapp.com/send?phone=${land.farmer.phone_number}`)
-                            }}>Chat with Seller</Button>} 
-                            {user.role === "user" && <Button onClick={this.handleBuyLand}>Proceed To Payment</Button>}
-                        
+                            }}>Chat with Seller</Button>}
+                            {user.role === "user" && <Button
+                                disabled={loadingCheckout}
+                                onClick={this.handleBuyLand}>{loadingCheckout ? "Loading" : "Proceed To Checkout"}</Button>}
+
                             <ReactModal
                                 isOpen={this.state.showChatModal}
                                 contentLabel="Chat">
@@ -378,13 +415,13 @@ class LandDetails extends Component {
                                     follows: location, Size.
                                 </p>
                                 <p>
-                                    2. The term of this lease shall be Expire in 
-                                     <b> {land.lease_period}</b> Years {" "}
+                                    2. The term of this lease shall be Expire in
+                                    <b> {land.lease_period}</b> Years {" "}
                                     except as terminated earlier according to a consensus Agreement.{" "}
                                 </p>
 
                                 <p>
-                                    3. The tenant agrees to pay a lease fee to the landowner of<b> Ksh. 
+                                    3. The tenant agrees to pay a lease fee to the landowner of<b> Ksh.
                                     {land.price}</b> per <b>{land.size}</b>.
                                     The tenant agrees to pay such sum at the beginning of the lease
                                     term and on the anniversary thereof unless otherwise mutually

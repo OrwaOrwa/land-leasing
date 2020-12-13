@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {getUserObject} from "../../../helpers/login";
 import {
-    ActionDiv, DescInput,
+    ActionDiv,
     FormDiv,
     Input,
     InputDiv,
@@ -11,7 +11,8 @@ import {
     Name,
     ProfileDiv,
     Title,
-    TopDiv, UploadButton
+    TopDiv,
+    UploadButton
 } from "../Dashboard";
 import SignOut from "../../SignOut";
 import {handleChangeData} from "../../../helpers/helper_functions";
@@ -20,11 +21,18 @@ import {POST_REQUEST} from "../../../values/globals";
 import endpoints from "../../../constants/endpoints";
 import Swal from "sweetalert2";
 import Transactions from './transactions';
+import Users from "./users";
+import Lands from "./lands";
+import Products from "./product";
 
 const pages = {
     blog: "blog",
-    transactions:"transactions"
+    transactions: "transactions",
+    users: "users",
+    lands: "lands",
+    products: "products",
 }
+
 class AdminDashboard extends Component {
 
     state = {
@@ -84,7 +92,7 @@ class AdminDashboard extends Component {
 
     render() {
         const user = getUserObject();
-        const {loading, data, errors,current_page} = this.state;
+        const {loading, data, errors, current_page} = this.state;
         return (
             <MainDiv>
                 <Title>Dashboard</Title>
@@ -95,51 +103,78 @@ class AdminDashboard extends Component {
                             {user.lastName}
                         </Name>
                         <ActionDiv>
-                            <Links onClick={e=>{
+                            <Links onClick={e => {
                                 e.preventDefault();
-                               window.location.reload();
+                                window.location.reload();
                             }}>Add Blog</Links>
                             {/*  <Links>Edit Product/Service</Links>*/}
-                           <Links onClick={e=>{
-                               e.preventDefault();
+                            <Links onClick={e => {
+                                e.preventDefault();
                                 this.setState({
                                     current_page: pages.transactions
                                 })
                             }}>Transactions</Links>
+                            <Links onClick={e => {
+                                e.preventDefault();
+                                this.setState({
+                                    current_page: pages.users
+                                })
+                            }}>Users</Links>
+                            <Links onClick={e => {
+                                e.preventDefault();
+                                this.setState({
+                                    current_page: pages.lands
+                                })
+                            }}>Lands</Links>
+                            <Links onClick={e => {
+                                e.preventDefault();
+                                this.setState({
+                                    current_page: pages.products
+                                })
+                            }}>Products</Links>
                         </ActionDiv>
                         <SignOut/>
                     </ProfileDiv>
                     {
-                        current_page === pages.blog && 
+                        current_page === pages.blog &&
                         <FormDiv>
-                        <InputDiv>
-                            <Label>Blog Title</Label>
-                            <Input
-                                type="text"
-                                value={data?.title}
-                                name="title"
-                                onChange={e => handleChangeData(e, this)}
-                            />
-                            {errors.title && (
-                                <p className="mb-0 small text-danger">{errors.title[0]}</p>
-                            )}
-                        </InputDiv>
-                        <InputDiv>
-                            <Label>Body</Label>
-                            <textarea id="body" required/>
-                            {errors.body && (
-                                <p className="mb-0 small text-danger">{errors.body[0]}</p>
-                            )}
-                        </InputDiv>
-                        <UploadButton disabled={loading} onClick={this.handleSubmit}>
-                            {loading ? "Loading" : "Upload"}
-                        </UploadButton>
-                    </FormDiv>
+                            <InputDiv>
+                                <Label>Blog Title</Label>
+                                <Input
+                                    type="text"
+                                    value={data?.title}
+                                    name="title"
+                                    onChange={e => handleChangeData(e, this)}
+                                />
+                                {errors.title && (
+                                    <p className="mb-0 small text-danger">{errors.title[0]}</p>
+                                )}
+                            </InputDiv>
+                            <InputDiv>
+                                <Label>Body</Label>
+                                <textarea id="body" required/>
+                                {errors.body && (
+                                    <p className="mb-0 small text-danger">{errors.body[0]}</p>
+                                )}
+                            </InputDiv>
+                            <UploadButton disabled={loading} onClick={this.handleSubmit}>
+                                {loading ? "Loading" : "Upload"}
+                            </UploadButton>
+                        </FormDiv>
                     }
                     {
                         current_page === pages.transactions && <Transactions/>
                     }
-                  
+                    {
+                        current_page === pages.users && <Users/>
+                    }
+                    {
+                        current_page === pages.lands && <Lands/>
+                    }
+                    {
+                        current_page === pages.products && <Products/>
+                    }
+
                 </TopDiv>
             </MainDiv>
         );
